@@ -4,7 +4,7 @@
 
 from SBpy3 import snowboydecoder
 import signal
-from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES
+from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES, VERSION
 from os import system, makedirs
 from os.path import exists
 import sys
@@ -57,18 +57,21 @@ def Detector():
 
 def update():
     sys.stdout.write('Checking Able for updates...')
-    cur_date = datetime.now().strftime('%Y-%m-%d')
+#     cur_date = datetime.now().strftime('%Y-%m-%d')
     params = dict(
-        date=cur_date
+        version=VERSION
     )
     resp = requests.get(url=UPDATEURL, params=params)
     data = json.loads(resp.text)
     vi = data['krystal'][0]['current_version']['versionid']
     nm = data['krystal'][0]['current_version']['name']
-    url = data['krystal'][0]['current_version']['url']
-    if data:
-        sys.stdout.write("Current Version: {}\n".format(zip(nm, vi, url)))
-    sys.stdout.write('Updates done.')
+    str(vi)
+    print("You're running {}\n".format(nm))
+    if vi != VERSION:
+        print('You have an outdated version Krystal. Please clone repo and run again.\n')
+    else:
+        print('You are up-to-date\n')
+    print('Updates done.\n')
     return True
 
 def importantFilesCheck():
@@ -142,7 +145,7 @@ class KrystalStartup():
         return True
 
     def hello(self, user):
-        # update()
+        update()
         print('Hello, {}'.format(user.title()))
         system('say -v Ava -r 195 "Hello {}"'.format(user))
         Detector()
