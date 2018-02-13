@@ -1,4 +1,4 @@
-from os import listdir
+from os import listdir, mkdir
 from os.path import join, isfile, splitext
 import pickle
 from cv2 import *
@@ -41,6 +41,7 @@ def predict(X_img_path, knn_clf=None, model_save_path=SAVEDFACES, DIST_THRESH=.5
 
 
 def snapshot():
+	mkdir(UNKNOWNFACEFILES)
     print('Taking a look at you.')
     name = 'snapshot'
     cam = VideoCapture(0)  # 0 -> index of camera
