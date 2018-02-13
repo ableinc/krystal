@@ -162,7 +162,8 @@ def vocalfeedback(phrase):
     try:
         sys.stdout.write(phrase)
     except TypeError:
-        print(phrase + '\n')
+        print(phrase)
+        print('\n')
     system('say -v Ava -r 195 "{}"'.format(phrase))
     return
 
