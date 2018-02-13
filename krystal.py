@@ -4,8 +4,9 @@
 
 from SBpy3 import snowboydecoder
 import signal
-from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL
-from os import system
+from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES
+from os import system, makedirs
+from os.path import exists
 import sys
 import json
 import logging
@@ -70,9 +71,13 @@ def update():
     sys.stdout.write('Updates done.')
     return True
 
-
+def importantFilesCheck():
+    if not exists(UNKNOWNFACEFILES):
+        makedirs(UNKNOWNFACEFILES)
+    
 class KrystalStartup():
     def __init__(self):
+        importantFilesCheck()
         FreshStart = Path(CONFIGJSON)
         if FreshStart.is_file():
             with open(CONFIGJSON, 'r') as userdata:
