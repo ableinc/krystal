@@ -56,7 +56,7 @@ def Detector():
 
 
 def update():
-    print('Checking Able for updates...')
+    print('\nChecking Able for updates...')
     time.sleep(3)
 #     cur_date = datetime.now().strftime('%Y-%m-%d')
     params = dict(
