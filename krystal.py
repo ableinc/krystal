@@ -75,7 +75,7 @@ def update():
         zipurl = requests.get('https://github.com/ableinc/krystal/archive/master.zip')
         zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
         zippath.extractall(UPDATEDUMP)
-        print("Check 'updated' directory for updated files. Please copy 'userinfo.json' to the new 'resources' folder and restart krystal.\n"
+        print("Check 'updated' directory for updated files. Please copy 'userinfo.json' to the new 'resources' folder and restart krystal.\n")
     else:
         print('You are up-to-date.')
     print('Updates done.\n')
