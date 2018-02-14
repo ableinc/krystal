@@ -16,12 +16,14 @@ your own Able Access ID. This ID grants you access to all of Able's latest softw
 Interacting with Krystal starts with: <i>"Hey Krystal" or "Krystal"</i><br>
 Accepted commands:
 <br>
-1) What is your name?<br>
-2) Who is Barack Obama?<br>
-3) Who is that? (This uses face recognition to detect who's in front of the camera - Training required)<br>
-4) What is that? (This uses object detection to detect what object is in front of the camera - No training required)<br>
+1) "Open [application]" (i.e. "Open Safari")<br>
+2) "Search for [your hearts desire]" (i.e. "Search Google for how to make the world's best sandwich")<br>
+1) "What is your name?"<br>
+2) "Who is Barack Obama?"<br>
+3) "Who is that?" (This uses face recognition to detect who's in front of the camera - Training required)<br>
+4) "What is that?" (This uses object detection to detect what object is in front of the camera - No training required)<br>
 # Training
-Tensorflow 1.5 is required for Krystal. To train Krystal on faces close to your heart create a folder with the name of the face
+Tensorflow is required for Krystal. To train Krystal on faces close to your heart create a folder with the name of the face
  within the "train" directory (Model > Train > "persons name" folder) and run the 'facerectrain.py' script. Then she will
  be ready to use out of the box. Please use clear images, no filters or facial effect...yes, no duck lips.
 <br>
@@ -32,7 +34,8 @@ Tensorflow 1.5 is required for Krystal. To train Krystal on faces close to your 
 
 # Features (In-Detail)
 <h2>Face Detection (Vision)</h2>
-Krystal comes with a unique feature that allows her to detect whomever you desire with a blink of an eye (well, a captured frame but you get my point). She uses the well-designed source code of Ageitgey's <a href="https://github.com/ageitgey/face_recognition">Face Recognition</a>software. As described above and in Ageitgrey's example code which Krystal uses in order for her to known the names of the detected faces in the image you must train a model that will contain the information for each individual person name (described as the folder name/label). The training script is contained within the "model" folder, the file is called facerectrain.py. Special thanks to Ageitgrey.
+Krystal comes with a unique feature that allows her to detect whomever you desire with a blink of an eye (well, a captured frame but you get my point). She uses the well-designed source code of Ageitgey's <a href="https://github.com/ageitgey/face_recognition">Face Recognition</a> software. As described above and in Ageitgrey's example code which Krystal uses in order for her to known the names of the detected faces in the image you must train a model that will contain the information for each individual person name (described as the folder name/label). The training script is contained within the "model" folder, the file is called facerectrain.py. Special thanks to Ageitgrey. 
+<b>NOTE:</b> Krystal comes with a pre-compiled model called "faces.ai" in the "model" directory and the faces it is trained on are located in the "train" folder. When you add or remove images in the "train" folder the model will be updated upon training. If you would like to remove the known faces in the "train" directory please do so, but as later version of Krystal are released this option will be deprecated and you will only be using a model that is maintained by Able. Login <a href="https://ableinc.us/access">here</a> to add your selfie to our universal model for training and release in the future.
 <br>
 <h2>Object Detection</h2>
 Krystal also comes with an pre-trained caffee model that contains a few commonly present or easily trained images. The images are general and there is a good chance of misidentification of abstract or unqiue objects. You can see the exact images the model can detect by checking the resources > Detection.py file. 
