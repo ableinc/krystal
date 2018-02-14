@@ -44,7 +44,6 @@ def snapshot():
     print('Taking a look at you.')
     name = 'snapshot'
     cam = VideoCapture(0)  # 0 -> index of camera
-    time.sleep(1)
     s, img = cam.read()
     if s:  # frame captured without any errors
         namedWindow("Snapshot", WINDOW_NORMAL)
