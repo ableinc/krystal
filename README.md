@@ -2,7 +2,8 @@
 - Author: Able (Jaylen Douglas)
 - Platform: MacOS (Windows & Linux Support in the future)<br>
 - Version: 0.90.1<br>
-- Required: <i>tensorflow>=1.5, pyaudio, spacy, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i><br><br>
+- Required: <i>tensorflow>=1.5, pyaudio, spacy, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i><br>
+- Python >= 3.4 Required<br><br>
 Krystal is intended to act as an intelligent friend you can always go to for a good conversation. 
 She will learn you as a person and will accompany you when there may not be anyone else. <br><br>
 Krystal is in <b>Beta</b> testing 
@@ -27,7 +28,7 @@ Tensorflow 1.5 is required for Krystal. To train Krystal on faces close to your 
 # First start:
 1) Clone or download the zip file for Krystal<br>
 2) Run 'depends.py'<br>
-3) Then run Krystal.py (Remember that an Able Access ID is required to use Krystal.) <br>
+3) Then run 'python3 Krystal.py' (Remember that an Able Access ID is required to use Krystal.)<br>
 
 # Features (In-Detail)
 <h2>Face Detection (Vision)</h2>
