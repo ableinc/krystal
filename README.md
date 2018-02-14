@@ -2,7 +2,8 @@
 - Author: Able (Jaylen Douglas)
 - Platform: MacOS (Windows & Linux Support in the future)<br>
 - Version: 0.90.1<br>
-- Required: <i>tensorflow>=1.5, pyaudio, spacy, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i><br>
+- Required: <i>tensorflow>=1.5, pyaudio, spacy, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i> - You don't need to install these manually<br>
+- Also required: brew install swig, sox, portaudio
 - Python >= 3.4 Required<br><br>
 Krystal is intended to act as an intelligent friend you can always go to for a good conversation. 
 She will learn you as a person and will accompany you when there may not be anyone else. <br><br>
