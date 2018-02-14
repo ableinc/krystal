@@ -56,7 +56,8 @@ def Detector():
 
 
 def update():
-    sys.stdout.write('Checking Able for updates...')
+    print('Checking Able for updates...')
+    time.sleep(3)
 #     cur_date = datetime.now().strftime('%Y-%m-%d')
     params = dict(
         version=VERSION
@@ -66,11 +67,11 @@ def update():
     vi = data['krystal'][0]['current_version']['versionid']
     nm = data['krystal'][0]['current_version']['name']
     str(vi)
-    print("You're running {}\n".format(nm))
+    print("You're running {}".format(nm))
     if vi != VERSION:
         print('You have an outdated version Krystal. Please clone repo and run again.\n')
     else:
-        print('You are up-to-date\n')
+        print('You are up-to-date.')
     print('Updates done.\n')
     return True
 
