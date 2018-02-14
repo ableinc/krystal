@@ -4,7 +4,7 @@
 
 from SBpy3 import snowboydecoder
 import signal
-from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES, VERSION
+from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES, VERSION, UPDATEDUMP
 from os import system, makedirs
 from os.path import exists
 import sys
@@ -15,6 +15,8 @@ import socket
 import requests
 from pathlib import Path
 from datetime import datetime
+import zipfile
+import io
 
 # Start-ups
 logging.basicConfig()
@@ -69,7 +71,11 @@ def update():
     str(vi)
     print("You're running {}".format(nm))
     if vi != VERSION:
-        print('You have an outdated version Krystal. Please clone repo and run again.\n')
+        print('You have an outdated version Krystal. Downloading current version.\n')
+        zipurl = requests.get('https://github.com/ableinc/krystal/archive/master.zip')
+        zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
+        zippath.extractall(UPDATEDUMP)
+        print("Check 'updated' directory for updated files. Please copy 'userinfo.json' to the new 'resources' folder and restart krystal.\n"
     else:
         print('You are up-to-date.')
     print('Updates done.\n')
@@ -78,7 +84,10 @@ def update():
 def importantFilesCheck():
     if not exists(UNKNOWNFACEFILES):
         makedirs(UNKNOWNFACEFILES)
-    
+
+    if not exists(UPDATEDUMP):
+        makedirs(UPDATEDUMP)
+
 class KrystalStartup():
     def __init__(self):
         importantFilesCheck()
