@@ -3,7 +3,7 @@ import os
 ROOT = os.path.dirname(os.path.abspath(__file__))
 KRYSTAL = os.path.join(ROOT, 'krystal.py')
 VERSION = '0901'
-UPDATEDUMP = os.path.join(ROOT, 'updated/')
+UPDATEDUMP = os.path.join(ROOT, 'updates/')
 APIURL = 'https://ableinc.us/krystal/api/'
 UPDATEURL = 'https://ableinc.us/krystal/update/'
 COMMANDURL = 'https://ableinc.us/krystal/commands/'
