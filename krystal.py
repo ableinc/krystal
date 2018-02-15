@@ -1,22 +1,21 @@
 #! /usr/bin/env python3
-# from setuptools.command.easy_install import main as install
-# install(['tensorflow', 'pyaudio', 'spacy', 'opencv-python', 'face_recognition', 'speechrecognition', 'tflearn', 'beautifulsoup'])
 
-from SBpy3 import snowboydecoder
-import signal
-from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES, VERSION, UPDATEDUMP
-from os import system, makedirs
-from os.path import exists
-import sys
+import io
 import json
 import logging
-import time
+import signal
 import socket
-import requests
-from pathlib import Path
-from datetime import datetime
+import sys
+import time
 import zipfile
-import io
+from os import system, makedirs
+from os.path import exists
+from pathlib import Path
+
+import requests
+
+from SBpy3 import snowboydecoder
+from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES, VERSION, UPDATEDUMP
 
 # Start-ups
 logging.basicConfig()
@@ -60,7 +59,6 @@ def Detector():
 def update():
     print('\nChecking Able for updates...')
     time.sleep(3)
-#     cur_date = datetime.now().strftime('%Y-%m-%d')
     params = dict(
         version=VERSION
     )
@@ -75,11 +73,13 @@ def update():
         zipurl = requests.get('https://github.com/ableinc/krystal/archive/master.zip')
         zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
         zippath.extractall(UPDATEDUMP)
-        print("Check 'updated' directory for updated files. Please copy 'userinfo.json' to the new 'resources' folder and restart krystal.\n")
+        print("Check 'updated' directory for updated files. Please copy 'userinfo.json' "
+              "to the new 'resources' folder and restart krystal.\n")
     else:
         print('You are up-to-date.')
     print('Updates done.\n')
     return True
+
 
 def importantFilesCheck():
     if not exists(UNKNOWNFACEFILES):
@@ -87,6 +87,7 @@ def importantFilesCheck():
 
     if not exists(UPDATEDUMP):
         makedirs(UPDATEDUMP)
+
 
 class KrystalStartup():
     def __init__(self):
@@ -175,6 +176,6 @@ if __name__ == '__main__':
         sys.stdout.write('Cygwin not supported. Maybe in the future.')
         exit(1)
     elif (sys.platform.startswith('darwin')) and (sys.version_info >= (3, 4)):
-        print("\nKRYSTAL BETA - THINGS MAY FAIL - DON'T BE ANGRY\n")
+        print("\nKrystal Beta 1\n")
         time.sleep(3)
         KrystalStartup()

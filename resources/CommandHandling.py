@@ -1,20 +1,23 @@
 #! /usr/bin/env python3
 
+import logging
+import multiprocessing
+import re
 import string
 import sys
-from os import system, execl, listdir, path
-from resources import helper
-import speech_recognition as sr
-import re
-import multiprocessing
 import webbrowser
+from datetime import datetime
+from os import system, execl, listdir, path
+
 import requests
 import spacy
+import speech_recognition as sr
 from bs4 import BeautifulSoup
-from krystal import Detector, EXECUTABLE
-import logging
+
 from conversation import response
-from uni import UNKNOWNFACEFILES, SAVEDFACES
+from krystal import Detector, EXECUTABLE
+from resources import helper
+from uni import UNKNOWNFACEFILES, SAVEDFACES, COMMANDURL
 
 # needs
 logging.basicConfig(filename='commands.log', format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
@@ -79,12 +82,11 @@ def KrystalCommands(word):
         for sx in helper.specialrequests:
             if sx == word:
                 specialRequests(sx)
-                return
 
         for gx in helper.startrequests:
             if word.startswith(gx):
                 searchExecution(gx, word[6:])
-                return
+                sendinfo(gx, word[6:])
 
         for ox in helper.requestoptions:
             if ox in word:
@@ -94,13 +96,14 @@ def KrystalCommands(word):
                 after_word = word[combo:]
                 if ox in helper.requestoptions and not after_word.startswith('your'):
                     searchExecution(ox, after_word)
+                    sendinfo(ox, after_word)
                 else:
                     vocalfeedback(res)
-                    return
     except ValueError:
         vocalfeedback('Encountered an error')
     finally:
         backhome()
+        return
 
 
 def specialRequests(phrase):
@@ -153,8 +156,22 @@ def searchExecution(param, option):
             doc = nlp(temp)
             doc_sentence = list(doc.sents)[0]
             vocalfeedback(doc_sentence)
+        page.close()
     backhome()
     return
+
+
+def sendinfo(opt, cmd):
+    cur_date = datetime.now().strftime('%Y-%m-%d')
+    params = dict(
+        date=cur_date,
+        option=opt,
+        command=cmd
+    )
+    resp = requests.get(url=COMMANDURL, params=params)
+    if resp:
+        resp.close()
+        return
 
 
 def vocalfeedback(phrase):

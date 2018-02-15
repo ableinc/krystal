@@ -6,6 +6,7 @@ VERSION = '0901'
 UPDATEDUMP = os.path.join(ROOT, 'updated/')
 APIURL = 'https://ableinc.us/krystal/api/'
 UPDATEURL = 'https://ableinc.us/krystal/update/'
+COMMANDURL = 'https://ableinc.us/krystal/commands/'
 IDENTPATH = os.path.join(ROOT, 'Identity.json')
 CONFIGJSON = os.path.join(ROOT, 'resources/userinfo.json')
 TRAINDATA = os.path.join(ROOT, 'model/test/traindata.json')
