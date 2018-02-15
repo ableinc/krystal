@@ -67,7 +67,7 @@ def update():
     vi = data['krystal'][0]['current_version']['versionid']
     nm = data['krystal'][0]['current_version']['name']
     str(vi)
-    print("You're running {}".format(nm))
+    print("You're running: {}".format(nm))
     if vi != VERSION:
         print('You have an outdated version Krystal. Downloading current version.\n')
         zipurl = requests.get('https://github.com/ableinc/krystal/archive/master.zip')
@@ -89,7 +89,7 @@ def importantFilesCheck():
         makedirs(UPDATEDUMP)
 
 
-class KrystalStartup():
+class KrystalStartup:
     def __init__(self):
         importantFilesCheck()
         FreshStart = Path(CONFIGJSON)

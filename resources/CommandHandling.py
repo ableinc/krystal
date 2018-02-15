@@ -33,7 +33,7 @@ def restart():
 
 
 def backhome():
-    sys.stdout.write('Background Enabled\n')
+    print('Background Enabled\n')
     Detector()
 
 
@@ -54,9 +54,9 @@ def startmic():
             conv = str(e)
             sys.stdout.write(conv + '\n' + "Sorry I didn't catch that. One more time?\n")
             num += 1
-            if num > 2:
-                sys.stdout.write('Too many request errors. Restarting.')
-                restart()
+            if num > 1:
+                sys.stdout.write('Too many request errors.')
+                return
             startmic()
 
 
@@ -131,12 +131,12 @@ def searchExecution(param, option):
         openresults = 'Opening ' + upper
         vocalfeedback(openresults)
         system('open -a /Applications/{}.app'.format(upper))
-    elif param in helper.requestoptions[1:3] or param in helper.startrequests:
+    elif param in helper.requestoptions[2:4] or param in helper.startrequests:
         nospace = re.sub(r"\s+", '+', option)
         searchresults = 'Searching Google for ' + option
-        vocalfeedback(searchresults)
         finalstringrequest = 'https://www.google.com/search?q=' + nospace + '&ie=UTF-8'
-        webbrowser.open(finalstringrequest)
+        webbrowser.open_new(finalstringrequest)
+        vocalfeedback(searchresults)
     elif param in helper.requestoptions[4:8]:
         conv = param + option
         nospace = re.sub(r"\s+", '+', conv)
