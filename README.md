@@ -1,5 +1,5 @@
 # Krystal
-- Author: Able (Jaylen Douglas)
+- Author: Able (Jaylen Douglas) - (if you're having URL trouble try: www.ableinc.us)
 - Platform: MacOS (Windows & Linux Support in the future)<br>
 - Version: 0.90.2<br>
 - Required: brew install swig, sox, portaudio [Must do this before running depends.py]<br>
@@ -10,7 +10,7 @@ She will learn you as a person and will accompany you when there may not be anyo
 Krystal is in <b>Beta</b> testing 
 now and you should not expect full functionality from her. Some features have been deprecated but may still show in the code. She will will be updated with algorithms that will achieve the goal of an artificially intelligent friend. Right now she is very basic but that is the point. 
 # Use
-To use Krystal please register for an account on <a href="https://ableinc.us/access">Able Access</a>, there you will receive
+To use Krystal please register for an account on <a href="http://ableinc.us/access">Able Access</a>, there you will receive
 your own Able Access ID. This ID grants you access to all of Able's latest software.
 <br>
 # Change Log:
