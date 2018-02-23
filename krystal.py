@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
-
+from os import system, makedirs, environ
+environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import io
 import json
 import logging
@@ -8,14 +9,13 @@ import socket
 import sys
 import time
 import zipfile
-from os import system, makedirs
 from os.path import exists
 from pathlib import Path
 
 import requests
 
 from SBpy3 import snowboydecoder
-from uni import MODEL, CONFIGJSON, APIURL, UPDATEURL, UNKNOWNFACEFILES, VERSION, UPDATEDUMP
+from uni import MODEL, CONFIGJSON, UPDATEURL, UNKNOWNFACEFILES, VERSION, UPDATEDUMP
 
 # Start-ups
 logging.basicConfig()
@@ -118,31 +118,35 @@ class KrystalStartup:
 
     def VerifyMember(self):
         n = 0
-        ableaccessID = input('AbleAccess ID: ')
-        params = dict(
-            user=ableaccessID
-        )
-        resp = requests.get(url=APIURL, params=params)
-        data = json.loads(resp.text)
-        name = data['krystal'][0]['user']['fname']
-        email = data['krystal'][0]['user']['email']
-        if name and email:
-            message = "User: {0}/{1} verified on ".format(name, ableaccessID)
-            message += time.strftime("%Y-%m-%d %H:%M:%S",
-                                     time.localtime(time.time()))
-            logger.debug(message)
-            if KrystalStartup.AddUserData(name, ableaccessID, email):
-                KrystalStartup.hello(self, name)
-                return
+        ableaccessID = input("AbleAccess ID [please enter 'demo']: ")
+        if ableaccessID != 'demo':
+            sys.exit(1)
         else:
-            n += 1
-            sys.stdout.write('Invalid ID / Unknown User')
-            if n < 2:
-                KrystalStartup.VerifyMember(self)
-            else:
-                sys.stdout.write('Too many tries. Verify account at ableinc.us/access')
-                sys.exit(1)
-        resp.close()
+            KrystalStartup.hello(self, 'Demo User')
+        # params = dict(
+        #     user=ableaccessID
+        # )
+        # resp = requests.get(url=APIURL, params=params)
+        # data = json.loads(resp.text)
+        # name = data['krystal'][0]['user']['fname']
+        # email = data['krystal'][0]['user']['email']
+        # if name and email:
+        #     message = "User: {0}/{1} verified on ".format(name, ableaccessID)
+        #     message += time.strftime("%Y-%m-%d %H:%M:%S",
+        #                              time.localtime(time.time()))
+        #     logger.debug(message)
+        #     if KrystalStartup.AddUserData(name, ableaccessID, email):
+        #         KrystalStartup.hello(self, name)
+        #         return
+        # else:
+        #     n += 1
+        #     sys.stdout.write('Invalid ID / Unknown User')
+        #     if n < 2:
+        #         KrystalStartup.VerifyMember(self)
+        #     else:
+        #         sys.stdout.write('Too many tries. Verify account at ableinc.us/access')
+        #         sys.exit(1)
+        # resp.close()
 
     @staticmethod
     def AddUserData(name,  aaid, email):
@@ -164,18 +168,9 @@ class KrystalStartup:
 
 
 if __name__ == '__main__':
-    if (sys.platform.startswith('win32')) and (sys.version_info >= (3, 4)):
-        sys.stdout.write('Though your Python version is compatible, '
-                         'Windows is not yet hosted for Krystal. In the works!')
-        exit(1)
-    elif (sys.platform.startswith('linux')) and (sys.version_info >= (3, 4)):
-        sys.stdout.write('Though your Python version is compatible, '
-                         'Linux is not yet hosted for Krystal. In the works!')
-        exit(1)
-    elif sys.platform.startswith('cygwin'):
-        sys.stdout.write('Cygwin not supported. Maybe in the future.')
-        exit(1)
-    elif (sys.platform.startswith('darwin')) and (sys.version_info >= (3, 4)):
-        print("\nKrystal Beta 1\n")
+    if not (sys.platform.startswith('darwin') and (sys.version_info >= 3, 4)):
+        print('At the moment {} is currently not supported. MacOS is currently the only '
+              'supported platform.'.format(sys.platform))
+        print("\nKrystal ------------- Beta Program v. 0.90.2\n")
         time.sleep(3)
         KrystalStartup()

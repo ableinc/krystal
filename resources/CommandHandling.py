@@ -2,24 +2,22 @@
 
 import logging
 import multiprocessing
-import re
-import string
 import sys
-import webbrowser
 from datetime import datetime
 from os import system, execl, listdir, path
 
 import requests
 import spacy
 import speech_recognition as sr
-from bs4 import BeautifulSoup
 
 from conversation import response
+from engine import language_engine
 from krystal import Detector, EXECUTABLE
 from resources import helper
 from uni import UNKNOWNFACEFILES, SAVEDFACES, COMMANDURL
 
 # needs
+AI = language_engine.LanguageEngine()
 logging.basicConfig(filename='commands.log', format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
 r = sr.Recognizer()
 FOUNDIT = True
@@ -60,43 +58,35 @@ def startmic():
             startmic()
 
 
-def is_word_character(c):
-    return 'a' <= c <= 'z' or 'A' <= c <= 'Z' or '0' <= c <= '9' or c == '_'
-
-
-def word_count(sentence):
-    c = 0
-    for i in range(1, len(sentence)):
-        if not is_word_character(sentence[i]) and is_word_character(sentence[i-1]):
-            c += 1
-    if is_word_character(sentence[-1]):
-        c += 1
-    if c != 250:
-        c = 250
-    return c
-
-
 def KrystalCommands(word):
     res = response.response(word)
     try:
-        for sx in helper.specialrequests:
-            if sx == word:
-                specialRequests(sx)
+        if word == helper.specialrequests[0]:
+            specialRequests(whos_that=True)
+        elif word == helper.specialrequests[1]:
+            specialRequests(whats_that=True)
 
-        for gx in helper.startrequests:
+        for gx in helper.startrequests or helper.defaultrequests:
             if word.startswith(gx):
-                searchExecution(gx, word[6:])
-                sendinfo(gx, word[6:])
+                paramlen = len(gx)
+                AI.DetailClassifier(gx, ''.join(word[paramlen:]))
+            else:
+                whole = word.index(gx) + len(gx)
+                removed_whole = word[whole:]
+                AI.DetailClassifier(gx, removed_whole)
+                # searchExecution(gx, word[paramlen:])
+                # sendinfo(gx, word[paramlen:])
+            decision = AI.DetailClassifier.basic_legacy_operations
+            vocalfeedback(decision)
 
-        for ox in helper.requestoptions:
+        for ox in helper.uniquerequests:
             if ox in word:
-                word_option = word.index(ox)
-                word_len = len(ox)
-                combo = word_option + word_len
-                after_word = word[combo:]
-                if ox in helper.requestoptions and not after_word.startswith('your'):
-                    searchExecution(ox, after_word)
-                    sendinfo(ox, after_word)
+                whole = word.index(ox) + len(ox)
+                sub_whole = word[whole:]
+                if not sub_whole.startswith('your'):
+                    AI.DetailClassifier(ox, word[sub_whole:])
+                    # searchExecution(ox, sub_whole)
+                    # sendinfo(ox, sub_whole)
                 else:
                     vocalfeedback(res)
     except ValueError:
@@ -106,8 +96,8 @@ def KrystalCommands(word):
         return
 
 
-def specialRequests(phrase):
-    if phrase == helper.specialrequests[0]:
+def specialRequests(whos_that=False, whats_that=False):
+    if whos_that is True:
         from resources import vision
         vision_snap = multiprocessing.Process(name='vision_snapshot', target=vision.snapshot())
         vision_snap.daemon = True
@@ -116,7 +106,7 @@ def specialRequests(phrase):
             preds = vision.predict(path.join(UNKNOWNFACEFILES, img_path), model_save_path=SAVEDFACES)
             name = ''.join(preds).title()
             vocalfeedback(name)
-    if phrase == helper.specialrequests[1]:
+    if whats_that is True:
         from resources import Detection
         det_thread = multiprocessing.Process(name='detection', target=Detection.Detection())
         det_thread.daemon = True
@@ -125,40 +115,24 @@ def specialRequests(phrase):
     return
 
 
-def searchExecution(param, option):
-    if param == 'open ':
-        upper = string.capwords(option)
-        openresults = 'Opening ' + upper
-        vocalfeedback(openresults)
-        system('open -a /Applications/{}.app'.format(upper))
-    elif param in helper.requestoptions[2:4] or param in helper.startrequests:
-        nospace = re.sub(r"\s+", '+', option)
-        searchresults = 'Searching Google for ' + option
-        finalstringrequest = 'https://www.google.com/search?q=' + nospace + '&ie=UTF-8'
-        webbrowser.open_new(finalstringrequest)
-        vocalfeedback(searchresults)
-    elif param in helper.requestoptions[4:8]:
-        conv = param + option
-        nospace = re.sub(r"\s+", '+', conv)
-        finalstringrequest = 'https://www.google.com/search?q=' + nospace
-        page = requests.get(finalstringrequest)
-        tree = BeautifulSoup(page.text, 'lxml')
-        data = [page.text for page in tree.find_all("span", class_="st")]
-        temp = ''.join(data)
-        removefp = temp.find('(')
-        if removefp:
-            removelp = temp.find(')')
-            withoutp = temp.replace(temp[removefp:removelp], '')
-            doc = nlp(withoutp)
-            doc_sentence = list(doc.sents)[0]
-            vocalfeedback(doc_sentence)
-        else:
-            doc = nlp(temp)
-            doc_sentence = list(doc.sents)[0]
-            vocalfeedback(doc_sentence)
-        page.close()
-    backhome()
-    return
+# def searchExecution(param, option):
+#     if param == 'open ':
+#         upper = string.capwords(option)
+#         openresults = 'Opening ' + upper
+#         vocalfeedback(openresults)
+#     elif param in helper.defaultrequests or helper.startrequests:
+#         searchresults = 'Searching Google for ' + option
+#         webbrowser.open_new(finalstringrequest)
+#         vocalfeedback(searchresults)
+#     elif param in helper.uniquerequests:
+#         # combination = param + option
+#         information = AI.DetailClassifier(param, option)
+#         information.isanoun('detect')
+#         resource = AI.InformationHandler()
+#         output = ''.join(resource.search_engine())
+#         vocalfeedback(output)
+#     backhome()
+#     return
 
 
 def sendinfo(opt, cmd):
