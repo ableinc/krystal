@@ -1,6 +1,6 @@
 import pip
 
-toinstall = ['tensorflow', 'pyaudio', 'spacy', 'opencv-python', 'face_recognition', 'speechrecognition', 'tflearn', 'beautifulsoup', 'imutils']
+toinstall = ['tensorflow', 'pyaudio', 'opencv-python', 'face_recognition', 'speechrecognition', 'tflearn', 'beautifulsoup', 'imutils']
 
 
 def install(pkg):
