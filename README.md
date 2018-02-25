@@ -1,13 +1,13 @@
 # Krystal
 - Author: Able (Jaylen Douglas) - (if you're having URL trouble try: www.ableinc.us)
-- Platform: MacOS (Windows & Linux Support in the future)<br>
+- Platform: MacOS (Windows and Linux Support in the future)<br>
 - Version: 0.90.2<br>
-- Required: brew install swig, sox, portaudio [Must do this before running depends.py]<br>
-- Required: <i>tensorflow>=1.5, pyaudio, spacy, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i> - You don't need to install these manually<br>
+- Required: brew install swig, sox, portaudio [Prefer doing before running depends.py]<br>
+- Required: <i>tensorflow>=1.5, pyaudio, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i> - You don't need to install these manually<br>
 - Python >= 3.4 Required<br><br>
 Krystal is intended to act as an intelligent friend you can always go to for a good conversation. 
 She will learn you as a person and will accompany you when there may not be anyone else. <br><br>
-Krystal is in <b>Beta</b> testing 
+Krystal is in <b>Alpha</b> testing 
 now and you should not expect full functionality from her. Some features have been deprecated but may still show in the code. She will will be updated with algorithms that will achieve the goal of an artificially intelligent friend. Right now she is very basic but that is the point. 
 # Use
 To use Krystal please register for an account on <a href="http://ableinc.us/access">Able Access</a>, there you will receive
@@ -17,6 +17,7 @@ your own Able Access ID. This ID grants you access to all of Able's latest softw
 <b>0.90.2</b><br>
 1) Due to server changes the need to have an AbleAccess ID has been temporarily removed. <b>To run Krystal type: demo</b><br>
 2) New language engine has been added (refer to 'engine' folder)
+3) Cleaned some bugs (speed improved)
 # Starting Krystal: 
 Interacting with Krystal starts with: <i>"Hey Krystal" or "Krystal"</i><br>
 Accepted commands:

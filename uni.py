@@ -1,18 +1,21 @@
 import os
 
+# main
 ROOT = os.path.dirname(os.path.abspath(__file__))
 KRYSTAL = os.path.join(ROOT, 'krystal.py')
-VERSION = '0901'
-UPDATEDUMP = os.path.join(ROOT, 'updates/')
+
+# krystal
+VERSION = '0902'
+UPDATEDUMP = os.path.join(ROOT, 'resources/updates/')
 IDENTPATH = os.path.join(ROOT, 'Identity.json')
 CONFIGJSON = os.path.join(ROOT, 'resources/userinfo.json')
 TRAINDATA = os.path.join(ROOT, 'model/test/traindata.json')
 TESTDATA = os.path.join(ROOT, 'model/test/testdata.json')
-KNOWNFACEFILES = os.path.join(ROOT, 'model/train')
-UNKNOWNFACEFILES = os.path.join(ROOT, 'model/test')
-SAVEDFACES = os.path.join(ROOT, 'model/faces.ai')
+TRAIN_FACES_DIR = os.path.join(ROOT, 'model/train')
+TEST_FACES_DIR = os.path.join(ROOT, 'model/test')
+FACES_MODEL = os.path.join(ROOT, 'model/faces.ai')
 DEFKEY = '23Able'
-MODEL = os.path.join(ROOT, 'model/Krystal.pmdl')
+AUDIOMODEL = os.path.join(ROOT, 'model/Krystal.pmdl')
 DET_PROTOTXT = os.path.join(ROOT, 'model/MobileNetSSD.prototxt.txt')
 DET_MODEL = os.path.join(ROOT, 'model/MobileNetSSD.caffemodel')
 

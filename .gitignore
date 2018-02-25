@@ -3,6 +3,7 @@
 .LSOverride
 .idea/**
 /resources/test.py
+/.DS_Store
 tflearn_logs/*
 Icon
 ._*

@@ -10,3 +10,4 @@ def install(pkg):
 if __name__ == '__main__':
     for x in toinstall:
         install(x)
+    input('Remember to brew install portaudio, sox and swig. Press enter to exit.')

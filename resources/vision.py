@@ -1,17 +1,17 @@
-from os import listdir
-from os.path import join, isfile, splitext
 import pickle
-from cv2 import *
+from os.path import isfile, splitext
+
 import face_recognition
+from cv2 import *
 from face_recognition import face_locations
-from uni import UNKNOWNFACEFILES, SAVEDFACES
-import time
+
+from uni import TEST_FACES_DIR, TRAIN_FACES_DIR
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 unknown = 'Im not sure'
 
 
-def predict(X_img_path, knn_clf=None, model_save_path=SAVEDFACES, DIST_THRESH=.5):
+def predict(X_img_path, knn_clf=None, model_save_path=TRAIN_FACES_DIR, DIST_THRESH=.5):
 
     if not isfile(X_img_path) or splitext(X_img_path)[1][1:] not in ALLOWED_EXTENSIONS:
         raise Exception("invalid image path: {}".format(X_img_path))
@@ -49,6 +49,6 @@ def snapshot():
         namedWindow("Snapshot", WINDOW_NORMAL)
         resizeWindow("Snapshot", 300, 300)
         destroyWindow("Snapshot")
-        imwrite(UNKNOWNFACEFILES + "/{}.jpg".format(name.title()), img)  # save image
+        imwrite(TEST_FACES_DIR + "/{}.jpg".format(name.title()), img)  # save image
 
 
