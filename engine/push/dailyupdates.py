@@ -7,9 +7,10 @@ from datetime import datetime
 
 import requests
 
-logging.basicConfig(filename='error.log', format='%(levelname)s:%(asctime)s:%(message)s', level=logging.DEBUG)
+from uni import ERROR_LOG
+
+logging.basicConfig(filename=ERROR_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)
 logger = logging.getLogger('Krystal')
-logger.setLevel(logging.INFO)
 
 
 class DailyUpdates:
@@ -91,7 +92,3 @@ class DailyUpdates:
         config.close()
         return True
 
-    @staticmethod
-    def error_handling(error, approach):
-        if approach == 'debug': logger.debug(error)
-        if approach == 'warning': logger.warning(error)

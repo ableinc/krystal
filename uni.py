@@ -7,17 +7,21 @@ KRYSTAL = os.path.join(ROOT, 'krystal.py')
 # krystal
 VERSION = '0902'
 UPDATEDUMP = os.path.join(ROOT, 'resources/updates/')
-IDENTPATH = os.path.join(ROOT, 'Identity.json')
 CONFIGJSON = os.path.join(ROOT, 'resources/userinfo.json')
-TRAINDATA = os.path.join(ROOT, 'model/test/traindata.json')
+DEFKEY = '23Able'
+
+# model
+TRAINDATA = os.path.join(ROOT, 'model/train/traindata.json')
 TESTDATA = os.path.join(ROOT, 'model/test/testdata.json')
 TRAIN_FACES_DIR = os.path.join(ROOT, 'model/train')
 TEST_FACES_DIR = os.path.join(ROOT, 'model/test')
 FACES_MODEL = os.path.join(ROOT, 'model/faces.ai')
-DEFKEY = '23Able'
 AUDIOMODEL = os.path.join(ROOT, 'model/Krystal.pmdl')
 DET_PROTOTXT = os.path.join(ROOT, 'model/MobileNetSSD.prototxt.txt')
 DET_MODEL = os.path.join(ROOT, 'model/MobileNetSSD.caffemodel')
+
+# engine
+ERROR_LOG = os.path.join(ROOT, 'engine/push/error.log')
 
 # conversation
 PERSONMODEL = os.path.join(ROOT, 'conversation/krystal_beta_model')
