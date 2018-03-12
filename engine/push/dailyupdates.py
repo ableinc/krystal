@@ -43,7 +43,7 @@ class DailyUpdates:
             params = dict(
                 version_id=self.version_id
             )
-            resp = requests.get(url=self.default, params=params)
+            resp = requests.get(url=self.default, params=params, verify=False)
             data = json.loads(resp.text)
             vi = data['krystal'][0]['versionid']
             # nm = data['krystal'][0]['name']
@@ -69,7 +69,7 @@ class DailyUpdates:
                 command=cmd,
                 date=cur_date
             )
-            resp = requests.get(url=self.default, params=params)
+            resp = requests.get(url=self.default, params=params, verify=False)
             if resp:
                 resp.close()
 
@@ -77,7 +77,7 @@ class DailyUpdates:
             params = dict(
                 aid=opt
             )
-            resp = requests.get(url=self.default, params=params)
+            resp = requests.get(url=self.default, params=params, verify=False)
             data = json.loads(resp.text)
             name = data['krystal'][0]['user_info']['fname']
             username = data['krystal'][0]['user_info']['username']

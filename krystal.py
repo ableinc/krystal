@@ -87,7 +87,7 @@ class KrystalStartup:
             KrystalStartup.VerifyMember(self)
 
     def VerifyMember(self):
-        ableaccessID = input("AbleAccess ID [please enter 'demo']: ")
+        ableaccessID = input("AbleAccess ID: ")
         validUser = Updates.universal_handler('verify', opt=ableaccessID)
         if validUser:
             KrystalStartup.hello(self, validUser)
