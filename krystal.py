@@ -12,11 +12,11 @@ from pathlib import Path
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 # krystal
-from uni import AUDIOMODEL, APIURL, COMMANDURL, CONFIGJSON, UPDATEURL, TEST_FACES_DIR, VERSION, UPDATEDUMP
+from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, UPDATEDUMP
 
 # initialize
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-Updates = DailyUpdates(APIURL, UPDATEURL, UPDATEDUMP, VERSION, COMMANDURL, CONFIGJSON)
+Updates = DailyUpdates(APIURL, UPDATEDUMP, VERSION, CONFIGJSON)
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
 

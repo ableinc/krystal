@@ -14,7 +14,7 @@ logger = logging.getLogger('Krystal')
 
 
 class DailyUpdates:
-    def __init__(self, default, update_url, update_dir, version_id, send_info_url, user_data_file):
+    def __init__(self, default, update_dir, version_id, user_data_file):
         """
             :param: default: Krystal's main API url - APIURL
             :param: update_url: the API provided for the updating of Krystal -UPDATEURL
@@ -25,10 +25,8 @@ class DailyUpdates:
 
         """
         self.default = default
-        self.server_updates = update_url
         self.update_dir = update_dir
         self.version_id = version_id
-        self.send_data = send_info_url
         self.user_data_file = user_data_file
 
     def universal_handler(self, use, opt='', cmd=''):
@@ -43,9 +41,9 @@ class DailyUpdates:
             print('Checking Able for updates...')
             time.sleep(2)
             params = dict(
-                version=self.version_id
+                version_id=self.version_id
             )
-            resp = requests.get(url=self.server_updates, params=params)
+            resp = requests.get(url=self.default, params=params)
             data = json.loads(resp.text)
             vi = data['krystal'][0]['versionid']
             # nm = data['krystal'][0]['name']
@@ -67,10 +65,11 @@ class DailyUpdates:
             params = dict(
                 id=user_id,
                 name=user_name,
+                version=self.version_id,
                 command=cmd,
                 date=cur_date
             )
-            resp = requests.get(url=self.send_data, params=params)
+            resp = requests.get(url=self.default, params=params)
             if resp:
                 resp.close()
 
