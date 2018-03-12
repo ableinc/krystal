@@ -1,5 +1,5 @@
 # Krystal
-- Author: Able (Jaylen Douglas) - (if you're having URL trouble try: www.ableinc.us)
+- Author: Able (Jaylen Douglas)
 - Platform: MacOS (Windows and Linux Support in the future)<br>
 - Version: 0.90.2<br>
 - Required: brew install swig, sox, portaudio [Prefer doing before running depends.py]<br>
@@ -15,7 +15,7 @@ your own Able Access ID. This ID grants you access to all of Able's latest softw
 <br>
 # Change Log:
 <b>0.90.2</b><br>
-1) Due to server changes the need to have an AbleAccess ID has been temporarily removed. <b>To run Krystal type: demo</b><br>
+1) <strike>Due to server changes the need to have an AbleAccess ID has been temporarily removed. </strike>- <B>FIXED</B>(use as normal)<br>
 2) New language engine has been added (refer to 'engine' folder)
 3) Cleaned some bugs (speed improved)
 # Starting Krystal: 

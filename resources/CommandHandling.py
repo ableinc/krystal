@@ -10,7 +10,7 @@ import speech_recognition as sr
 # krystal
 from conversation import response
 from engine.operations.language_engine import LanguageEngine
-from krystal import Detector, EXECUTABLE
+from krystal import Detector, EXECUTABLE, returner
 from resources.helper import specialrequests, defaultrequests, uniquerequests, startrequests
 from uni import TEST_FACES_DIR, FACES_MODEL
 
@@ -65,13 +65,14 @@ def KrystalCommands(sentence):
 
         for phrase in startrequests, defaultrequests, uniquerequests:
             if phrase in sentence:
-                sub = sentence.index(phrase) + len(phrase)
-                removed_sub = sentence[sub:]
-                if not removed_sub.startswith('your'):
-                    classify = AI.DetailClassifier(phrase, removed_sub)
+                legnth_of_phrase = sentence.index(phrase) + len(phrase)
+                string_after_phrase = sentence[legnth_of_phrase:]
+                if not string_after_phrase.startswith('your'):
+                    classify = AI.DetailClassifier(phrase, string_after_phrase)
                     classify.isanoun()
                     legacy = classify.basic_legacy_operations()
                     vocalfeedback(legacy)
+                    returner(sentence)
                 else:
                     new_info_handler.search_engine()
             else:

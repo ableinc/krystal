@@ -5,7 +5,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 KRYSTAL = os.path.join(ROOT, 'krystal.py')
 
 # krystal
-VERSION = '0902'
+VERSION = '0.90.2'
 UPDATEDUMP = os.path.join(ROOT, 'resources/updates/')
 CONFIGJSON = os.path.join(ROOT, 'resources/userinfo.json')
 DEFKEY = '23Able'

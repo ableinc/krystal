@@ -27,6 +27,11 @@ Welcome = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI do
 interrupted = False
 
 
+def returner(data_to_send):
+    Updates.universal_handler(use='send_info', cmd=data_to_send)
+    return
+
+
 def signal_handler(signal, frame):
     global interrupted
     interrupted = True
@@ -70,7 +75,6 @@ class KrystalStartup:
                     KrystalStartup.hello(self, name)
                     userdata.close()
                     Detector()
-                    userdata.close()
                 else:
                     KrystalStartup.VerifyMember(self)
                     userdata.close()
@@ -84,11 +88,9 @@ class KrystalStartup:
 
     def VerifyMember(self):
         ableaccessID = input("AbleAccess ID [please enter 'demo']: ")
-        if ableaccessID != 'demo':
-            sys.exit(1)
-        else:
-            KrystalStartup.hello(self, 'User')
-            # Updates.universal_handler('verify', opt=ableaccessID)
+        validUser = Updates.universal_handler('verify', opt=ableaccessID)
+        if validUser:
+            KrystalStartup.hello(self, validUser)
 
     def hello(self, user):
         print('\nHello, {}'.format(user.title()))
@@ -102,6 +104,6 @@ if __name__ == '__main__':
         print('At the moment {} is currently not supported. MacOS is currently the only '
               'supported platform.'.format(sys.platform))
         sys.exit(1)
-    print("\nKrystal ------------- Alpha (0.90.2)\n")
-    # Updates.universal_handler('update')
+    print("\nKrystal Alpha ------------- {}\n".format(VERSION))
+    Updates.universal_handler('update')
     KrystalStartup()

@@ -14,7 +14,7 @@ logger = logging.getLogger('Krystal')
 
 
 class DailyUpdates:
-    def __init__(self, default, update_url, update_dir, version_id, send_info_url, add_user_file):
+    def __init__(self, default, update_url, update_dir, version_id, send_info_url, user_data_file):
         """
             :param: default: Krystal's main API url - APIURL
             :param: update_url: the API provided for the updating of Krystal -UPDATEURL
@@ -29,10 +29,16 @@ class DailyUpdates:
         self.update_dir = update_dir
         self.version_id = version_id
         self.send_data = send_info_url
-        self.add_user_data = add_user_file
+        self.user_data_file = user_data_file
 
     def universal_handler(self, use, opt='', cmd=''):
+        """
 
+        :param use: the call to which command you would like to use
+        :param opt: the option you combined with the command (cmd) (i.e 'what is your' ... [cmd]
+        :param cmd:
+        :return:
+        """
         if use == 'update':
             print('Checking Able for updates...')
             time.sleep(2)
@@ -41,23 +47,28 @@ class DailyUpdates:
             )
             resp = requests.get(url=self.server_updates, params=params)
             data = json.loads(resp.text)
-            vi = data['krystal'][0]['current_version']['versionid']
-            # nm = data['krystal'][0]['current_version']['name']
-            url = data['krystal'][0]['current_version']['url']
+            vi = data['krystal'][0]['versionid']
+            # nm = data['krystal'][0]['name']
+            url = data['krystal'][0]['url']
             if vi != self.version_id:
-                print('You have an outdated version of Krystal. Downloading current version.\n')
-                zipurl = requests.get(url)
-                zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
-                zippath.extractall(self.update_dir)
-                print("Check 'updated' directory for updated files. Please copy 'userinfo.json' "
-                      "to the new 'resources' folder and restart krystal.\n")
+                new_version = input('You have an outdated version of Krystal. Download latest version? (Y/n) ')
+                if new_version.lower() == 'y':
+                    zipurl = requests.get(url)
+                    zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
+                    zippath.extractall(self.update_dir)
+                    print("Check 'updated' directory for updated files. Please copy 'userinfo.json' "
+                          "to the new 'resources' folder and restart krystal.\n")
+                else:
+                    pass
 
         elif use == 'send_data':
             cur_date = datetime.now().strftime('%Y-%m-%d')
+            user_name, user_id = DailyUpdates.get_user_name(self)
             params = dict(
-                date=cur_date,
-                option=opt,
-                command=cmd
+                id=user_id,
+                name=user_name,
+                command=cmd,
+                date=cur_date
             )
             resp = requests.get(url=self.send_data, params=params)
             if resp:
@@ -65,12 +76,13 @@ class DailyUpdates:
 
         elif use == 'verify':
             params = dict(
-                user=opt
+                aid=opt
             )
             resp = requests.get(url=self.default, params=params)
             data = json.loads(resp.text)
-            name = data['krystal'][0]['user']['fname']
-            email = data['krystal'][0]['user']['email']
+            name = data['krystal'][0]['user_info']['fname']
+            username = data['krystal'][0]['user_info']['username']
+            email = data['krystal'][0]['user_info']['email']
 
             if opt == '':
                 raise AttributeError('AbleAccess ID cannot be left empty')
@@ -78,17 +90,25 @@ class DailyUpdates:
             message = "User: {0}/{1} verified on ".format(name, opt)
             message += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
             logger.debug(message)
-            if DailyUpdates.add_data(self, name, opt, email):
-                return True
+            if DailyUpdates.add_data(self, name, username, opt, email):
+                return name
             resp.close()
 
-    def add_data(self, name, aaid, email):
+    def add_data(self, name, usrnm, aaid, email):
         data = {'name': '{}'.format(name),
+                'username': '{}'.format(usrnm),
                 'accessID': '{}'.format(aaid),
                 'email': '{}'.format(email)
                 }
-        with open(self.add_user_data, 'w') as config:
+        with open(self.user_data_file, 'w') as config:
             json.dump(data, config)
         config.close()
         return True
+
+    def get_user_name(self):
+        with open(self.user_data_file, 'r') as userdata:
+            data = json.load(userdata)
+            name = data['name']
+            key = data['accessID']
+            return name, key
 
