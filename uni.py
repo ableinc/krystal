@@ -33,5 +33,5 @@ PERSONMODEL_LOG = os.path.join(ROOT, 'conversation/tflearn_logs')
 EAS_NEWDATA = os.path.join(ROOT, 'resources/newdata.json')
 
 # Able Inc. API
-APIURL = 'https://ableinc.us/krystal/api/v0'
+APIURL = 'https://ableinc.us/krystal/api/v0/'
 
