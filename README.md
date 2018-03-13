@@ -10,7 +10,7 @@ She will learn you as a person and will accompany you when there may not be anyo
 Krystal is in <b>Alpha</b> testing 
 now and you should not expect full functionality from her. Some features have been deprecated but may still show in the code. She will will be updated with algorithms that will achieve the goal of an artificially intelligent friend. Right now she is very basic but that is the point. 
 # Use
-To use Krystal please register for an account on <a href="http://ableinc.us/access">Able Access</a>, there you will receive
+To use Krystal please register for an account on <a href="https://ableinc.us/access">Able Access</a>, there you will receive
 your own Able Access ID. This ID grants you access to all of Able's latest software.
 <br>
 # Change Log:
@@ -20,11 +20,11 @@ your own Able Access ID. This ID grants you access to all of Able's latest softw
 3) Automatic updates
 4) Stepped on a few bugs (didn't hurt myself).
 # Heads up
-Planned updates and improvements:
-1) Krystal web application (any smartphone compatibility)
-2) Fresh, polished pre-built model for interaction
-3) Less dependency on 'on-the-spot' information gathering (upon model completion)
-4) Mobile application (not of importance at the moment, major changes to Krystal still needed)
+Planned updates and improvements | Completion dates:
+1) Krystal web application (any smartphone compatibility) | N/A
+2) Fresh, polished pre-built model for interaction | N/A
+3) Less dependency on 'on-the-spot' information gathering (upon model completion) | N/A
+4) Mobile application (not of importance at the moment, major changes to Krystal still needed) | N/A
 
 # Starting Krystal: 
 Interacting with Krystal starts with: <i>"Hey Krystal" or "Krystal"</i><br>
@@ -47,7 +47,7 @@ Tensorflow is required for Krystal. To train Krystal on faces close to your hear
 # Features (In-Detail)
 <h2>Face Detection (Vision)</h2>
 Krystal comes with a unique feature that allows her to detect whomever you desire with a blink of an eye (well, a capture of a frame, but you get my point). She uses the well-designed source code of Ageitgey's <a href="https://github.com/ageitgey/face_recognition">Face Recognition</a> software. In Ageitgrey's example code, which Krystal uses, you must train a model that will contain the information for each individual person's name (described as the folder name/label). The training script is contained within the "model" directory, the file is called facerectrain.py. Special thanks to Ageitgrey. 
-<b>NOTE:</b> Krystal comes with a pre-compiled model called "faces.ai" in the "model" directory, alongside the faces she is trained on are located in the "train" folder. When you add or remove images in the "train" folder the model will be updated upon training. If you would like to remove the known faces in the "train" directory please do so, but as later version of Krystal are released this option will be deprecated and you will only be using a model that is maintained by Able (with contributions from you of course). Login <a href="https://ableinc.us/access">here</a> to add your selfie to our universal model for training and release in the future.
+<b>NOTE:</b> Krystal comes with a pre-compiled model called "faces.ai" in the "model" directory, alongside the faces she is trained on are located in the "train" folder. When you add or remove images in the "train" folder the model will be updated upon training. If you would like to remove the known faces in the "train" directory please do so, but as later version of Krystal are released this option will be deprecated and you will only be using a model that is maintained by Able (with contributions from you of course). Login <a href="https://ableinc.us/access/login.php">here</a> to add your selfie to our universal model for training and release in the future.
 <br>
 <h2>Object Detection</h2>
 Krystal comes with an pre-trained caffee model that contains a few commonly known or easy-to-train images. The images are general and there is a good chance of misidentification of abstract or unqiue objects. You can see the exact images the model can detect by checking the resources > Detection.py file. 
