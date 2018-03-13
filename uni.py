@@ -1,3 +1,4 @@
+import logging
 import os
 
 # main
@@ -5,9 +6,11 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 KRYSTAL = os.path.join(ROOT, 'krystal.py')
 
 # krystal
-VERSION = '0.90.2'
-UPDATEDUMP = os.path.join(ROOT, 'resources/updates/')
-CONFIGJSON = os.path.join(ROOT, 'resources/userinfo.json')
+VERSION = '0.90.3'
+UPDATEDUMP = os.path.join(ROOT, 'update')
+USER_INFO_MOVE_LOCATION = os.path.join(UPDATEDUMP, 'krystal-master/engine/etc/')
+EXISTING_UPDATE = os.path.join(ROOT, 'update/krystal-master/')
+CONFIGJSON = os.path.join(ROOT, 'engine/etc/userinfo.json')
 DEFKEY = '23Able'
 
 # model
@@ -20,8 +23,8 @@ AUDIOMODEL = os.path.join(ROOT, 'model/Krystal.pmdl')
 DET_PROTOTXT = os.path.join(ROOT, 'model/MobileNetSSD.prototxt.txt')
 DET_MODEL = os.path.join(ROOT, 'model/MobileNetSSD.caffemodel')
 
-# engine
-ERROR_LOG = os.path.join(ROOT, 'engine/push/error.log')
+# logs
+ERROR_LOG = os.path.join(ROOT, 'engine/etc/error.log')
 
 # conversation
 PERSONMODEL = os.path.join(ROOT, 'conversation/krystal_beta_model')
@@ -34,4 +37,7 @@ EAS_NEWDATA = os.path.join(ROOT, 'resources/newdata.json')
 
 # Able Inc. API
 APIURL = 'https://ableinc.us/krystal/api/v0/'
+NOTIFICATIONS = 'https://ableinc.us/krystal/push/'
 
+# pre-processed
+ERROR_LOGGER = logging.basicConfig(filename=ERROR_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)

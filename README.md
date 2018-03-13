@@ -1,7 +1,7 @@
 # Krystal
 - Author: Able (Jaylen Douglas)
 - Platform: MacOS (Windows and Linux Support in the future)<br>
-- Version: 0.90.2<br>
+- Version: 0.90.3<br>
 - Required: brew install swig, sox, portaudio [Prefer doing before running depends.py]<br>
 - Required: <i>tensorflow>=1.5, pyaudio, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i> - You don't need to install these manually<br>
 - Python >= 3.4 Required<br><br>
@@ -14,10 +14,18 @@ To use Krystal please register for an account on <a href="http://ableinc.us/acce
 your own Able Access ID. This ID grants you access to all of Able's latest software.
 <br>
 # Change Log:
-<b>0.90.2</b><br>
-1) <strike>Due to server changes the need to have an AbleAccess ID has been temporarily removed. </strike>- <B>FIXED</B>(use as normal)<br>
-2) New language engine has been added (refer to 'engine' folder)
-3) Cleaned some bugs (speed improved)
+<b>0.90.3</b><br>
+1) All API services have been restored.
+2) Introducing notifications. You will now receive notifications directly from Able.
+3) Automatic updates
+4) Stepped on a few bugs (didn't hurt myself).
+# Heads up
+Planned updates and improvements:
+1) Krystal web application (any smartphone compatibility)
+2) Fresh, polished pre-built model for interaction
+3) Less dependency on 'on-the-spot' information gathering (upon model completion)
+4) Mobile application (not of importance at the moment, major changes to Krystal still needed)
+
 # Starting Krystal: 
 Interacting with Krystal starts with: <i>"Hey Krystal" or "Krystal"</i><br>
 Accepted commands:

@@ -2,7 +2,11 @@
 .AppleDouble
 .LSOverride
 .idea/**
-/resources/test.py
+resources/test.py
+update/
+engine/etc/error.log
+engine/etc/userinfo.json
+*.log
 /.DS_Store
 tflearn_logs/*
 Icon

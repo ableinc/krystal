@@ -12,11 +12,11 @@ from pathlib import Path
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 # krystal
-from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, UPDATEDUMP
+from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, UPDATEDUMP, NOTIFICATIONS
 
 # initialize
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-Updates = DailyUpdates(APIURL, UPDATEDUMP, VERSION, CONFIGJSON)
+Updates = DailyUpdates(APIURL, NOTIFICATIONS, UPDATEDUMP, VERSION, CONFIGJSON)
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
 
@@ -93,8 +93,9 @@ class KrystalStartup:
             KrystalStartup.hello(self, validUser)
 
     def hello(self, user):
-        print('\nHello, {}'.format(user.title()))
+        print('Hello, {}\n'.format(user.title()))
         system('say -v Ava -r 185 "Hello {}"'.format(user))
+        Updates.universal_handler('push', opt='user')
         Detector()
         return
 

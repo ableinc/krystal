@@ -1,30 +1,29 @@
 import io
 import json
-import logging
+import textwrap
 import time
 import zipfile
 from datetime import datetime
+from os import rename
+from os.path import exists
 
 import requests
 
-from uni import ERROR_LOG
-
-logging.basicConfig(filename=ERROR_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)
-logger = logging.getLogger('Krystal')
+from uni import ERROR_LOGGER, USER_INFO_MOVE_LOCATION, EXISTING_UPDATE
 
 
 class DailyUpdates:
-    def __init__(self, default, update_dir, version_id, user_data_file):
+    def __init__(self, default, notify, update_dir, version_id, user_data_file):
         """
             :param: default: Krystal's main API url - APIURL
-            :param: update_url: the API provided for the updating of Krystal -UPDATEURL
+            :param: notify: Krystal's notification API url - NOTIFICATION
             :param: update_dir: the directory to store the update zip - UPDATEDUMP
             :param: version_id: your current running version of Krystal - VERSION
-            :param: send_info_url: the API provided to send user data back to Able Inc. - COMMANDURL
             :param: add_user_file: the API provided to fetch if the provided AbleAccess ID is valid - CONFIGJSON
 
         """
         self.default = default
+        self.notify = notify
         self.update_dir = update_dir
         self.version_id = version_id
         self.user_data_file = user_data_file
@@ -43,21 +42,33 @@ class DailyUpdates:
             params = dict(
                 version_id=self.version_id
             )
-            resp = requests.get(url=self.default, params=params, verify=False)
+            resp = requests.get(url=self.default, params=params)
             data = json.loads(resp.text)
             vi = data['krystal'][0]['versionid']
             # nm = data['krystal'][0]['name']
             url = data['krystal'][0]['url']
+            # vi_to_float = float(vi)
+            # version_to_float = float(self.version_id)
             if vi != self.version_id:
-                new_version = input('You have an outdated version of Krystal. Download latest version? (Y/n) ')
+                new_version = input('You have an outdated or unmaintained version of Krystal. '
+                                    'Download latest version? (y/n) ')
                 if new_version.lower() == 'y':
-                    zipurl = requests.get(url)
-                    zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
-                    zippath.extractall(self.update_dir)
-                    print("Check 'updated' directory for updated files. Please copy 'userinfo.json' "
-                          "to the new 'resources' folder and restart krystal.\n")
+                    if not exists(EXISTING_UPDATE):
+                        print('Downloading Krystal version {} ...'.format(vi))
+                        zipurl = requests.get(url)
+                        zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
+                        zippath.extractall(self.update_dir)
+
+                    if exists(self.user_data_file):
+                        rename(self.user_data_file, USER_INFO_MOVE_LOCATION)
+
+                    print('\nKrystal will shutdown. Please delete all content except the "update" folder, \ncopy the '
+                          'contents in the "update" folder to existing the Krystal directory.\nThen restart Krystal.')
+                    exit(1)
                 else:
                     pass
+            else:
+                print('Latest release\n')
 
         elif use == 'send_data':
             cur_date = datetime.now().strftime('%Y-%m-%d')
@@ -69,7 +80,7 @@ class DailyUpdates:
                 command=cmd,
                 date=cur_date
             )
-            resp = requests.get(url=self.default, params=params, verify=False)
+            resp = requests.get(url=self.default, params=params)
             if resp:
                 resp.close()
 
@@ -77,27 +88,44 @@ class DailyUpdates:
             params = dict(
                 aid=opt
             )
-            resp = requests.get(url=self.default, params=params, verify=False)
+            resp = requests.get(url=self.default, params=params)
             data = json.loads(resp.text)
             name = data['krystal'][0]['user_info']['fname']
             username = data['krystal'][0]['user_info']['username']
             email = data['krystal'][0]['user_info']['email']
 
-            if opt == '':
-                raise AttributeError('AbleAccess ID cannot be left empty')
+            if opt == '' and opt.isdigit():
+                ERROR_LOGGER.error('AbleAccess ID entry was left blank or non-numeric value')
+                raise AttributeError('Invalid entry')
 
-            message = "User: {0}/{1} verified on ".format(name, opt)
+            message = "{0} ({1}) verified on ".format(name, opt)
             message += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-            logger.debug(message)
-            if DailyUpdates.add_data(self, name, username, opt, email):
+            if DailyUpdates.add_data(self, name, username, opt, email, message):
                 return name
             resp.close()
 
-    def add_data(self, name, usrnm, aaid, email):
+        elif use == 'push':
+            params = dict(
+                memo=opt
+            )
+            resp = requests.get(url=self.notify, params=params)
+            data = json.loads(resp.text)
+            name = data['memo'][0]['name']
+            memo = data['memo'][0]['message']
+            date = data['memo'][0]['date']
+            print('Message from Able')
+            print(name + ',                       ' + date + '\n')
+            print('\n'.join(textwrap.wrap(memo, width=40)))
+            print('\n')
+            resp.close()
+        return
+
+    def add_data(self, name, usrnm, aaid, email, message):
         data = {'name': '{}'.format(name),
                 'username': '{}'.format(usrnm),
                 'accessID': '{}'.format(aaid),
-                'email': '{}'.format(email)
+                'email': '{}'.format(email),
+                'verification': '{}'.format(message)
                 }
         with open(self.user_data_file, 'w') as config:
             json.dump(data, config)

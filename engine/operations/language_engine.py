@@ -16,7 +16,7 @@ from uni import EAS_NEWDATA
 """
 
                             Environmental Adaption Protocol - Language Engine:
-                        Handles all instances of new information gathered by Krystal.
+                               Handles all information gathered by Krystal.
 
    
 

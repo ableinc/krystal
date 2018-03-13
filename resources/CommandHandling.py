@@ -65,12 +65,15 @@ def KrystalCommands(sentence):
 
         for phrase in startrequests, defaultrequests, uniquerequests:
             if phrase in sentence:
+                print('phrase > ', phrase)
                 legnth_of_phrase = sentence.index(phrase) + len(phrase)
                 string_after_phrase = sentence[legnth_of_phrase:]
+                print('command > ', string_after_phrase)
                 if not string_after_phrase.startswith('your'):
                     classify = AI.DetailClassifier(phrase, string_after_phrase)
                     classify.isanoun()
                     legacy = classify.basic_legacy_operations()
+                    print(legacy)
                     vocalfeedback(legacy)
                     returner(sentence)
                 else:
