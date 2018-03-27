@@ -1,16 +1,13 @@
-import io
-import json
-import textwrap
-import time
-import zipfile
+import io, json, textwrap, time, zipfile
 from datetime import datetime
-from os import system, mkdir
+from os import system, mkdir, environ
 from distutils.dir_util import copy_tree
-from shutil import rmtree, copyfile
-
+from shutil import rmtree, copy2
 import requests
+from uni import ERROR_LOGGER, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO
 
-from uni import ERROR_LOGGER, USER_INFO_MOVE_LOCATION, TEMP_UPDATE_DIR, ROOT
+main_script = KRYSTAL
+environ['GLOG_minloglevel'] = '2'
 
 
 class DailyUpdates:
@@ -56,13 +53,15 @@ class DailyUpdates:
                     print('Downloading Krystal version {} ...'.format(vi))
                     source = requests.get(url)
                     source_file = zipfile.ZipFile(io.BytesIO(source.content))
-                    copyfile(self.user_data_file, USER_INFO_MOVE_LOCATION)
+                    copy2(self.user_data_file, ROOT_OF_ROOT)
                     rmtree(ROOT)
                     mkdir(ROOT)
                     source_file.extractall(ROOT)
                     copy_tree(TEMP_UPDATE_DIR, ROOT)
+                    copy2(GRAB_USER_INFO, CONFIGJSON)
                     rmtree(TEMP_UPDATE_DIR)
-                    print('Thank you for downloading. Please restart Krystal.')
+                    print('Thank you for downloading. Krystal will restart.')
+                    system('python3 {}'.format(main_script))
                     exit(0)
                 else:
                     pass

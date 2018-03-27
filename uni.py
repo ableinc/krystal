@@ -8,9 +8,9 @@ KRYSTAL = os.path.join(ROOT, 'krystal.py')
 
 # krystal
 VERSION = '0.90.3'
-TEMP_UPDATE_DIR = os.path.join(ROOT, 'krystal-master/')
-USER_INFO_MOVE_LOCATION = os.path.join(TEMP_UPDATE_DIR, 'engine/etc/userinfo.json')
-CONFIGJSON = os.path.join(ROOT, 'engine/etc/userinfo.json')
+TEMP_UPDATE_DIR = os.path.join(ROOT, 'krystal-master/') # grabbing zipfile path, this cannot be changed
+GRAB_USER_INFO = os.path.join(ROOT_OF_ROOT, 'userinfo.json') # userinfo.json temp location during update
+CONFIGJSON = os.path.join(ROOT, 'engine/etc/userinfo.json') # userinfo.json file location after update / original loc
 DEFKEY = '23Able'
 
 # model
