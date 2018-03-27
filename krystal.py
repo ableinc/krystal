@@ -12,11 +12,11 @@ from pathlib import Path
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 # krystal
-from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, UPDATEDUMP, NOTIFICATIONS
+from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, NOTIFICATIONS
 
 # initialize
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-Updates = DailyUpdates(APIURL, NOTIFICATIONS, UPDATEDUMP, VERSION, CONFIGJSON)
+Updates = DailyUpdates(APIURL, NOTIFICATIONS, VERSION, CONFIGJSON)
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
 
@@ -58,11 +58,8 @@ def importantFilesCheck():
     if not exists(TEST_FACES_DIR):
         makedirs(TEST_FACES_DIR)
 
-    if not exists(UPDATEDUMP):
-        makedirs(UPDATEDUMP)
 
-
-class KrystalStartup:
+class KrystalInitialStartup:
     def __init__(self):
         importantFilesCheck()
         FreshStart = Path(CONFIGJSON)
@@ -72,11 +69,11 @@ class KrystalStartup:
                 name = data['name']
                 key = data['accessID']
                 if key and name:
-                    KrystalStartup.hello(self, name)
+                    KrystalInitialStartup.hello(self, name)
                     userdata.close()
                     Detector()
                 else:
-                    KrystalStartup.VerifyMember(self)
+                    KrystalInitialStartup.VerifyMember(self)
                     userdata.close()
         else:
             sys.stdout.write("Oh my goodness! Hello You!\nThis is our first time meeting :)")
@@ -84,13 +81,13 @@ class KrystalStartup:
                 sys.stdout.write(word)
                 sys.stdout.flush()
                 time.sleep(0.10)
-            KrystalStartup.VerifyMember(self)
+            KrystalInitialStartup.VerifyMember(self)
 
     def VerifyMember(self):
         ableaccessID = input("AbleAccess ID: ")
         validUser = Updates.universal_handler('verify', opt=ableaccessID)
         if validUser:
-            KrystalStartup.hello(self, validUser)
+            KrystalInitialStartup.hello(self, validUser)
 
     def hello(self, user):
         print('Hello, {}\n'.format(user.title()))
@@ -100,11 +97,15 @@ class KrystalStartup:
         return
 
 
-if __name__ == '__main__':
+def start():
     if not sys.platform.startswith('darwin') and (sys.version_info >= 3, 4):
         print('At the moment {} is currently not supported. MacOS is currently the only '
               'supported platform.'.format(sys.platform))
         sys.exit(1)
     print("\nKrystal Alpha ------------- {}\n".format(VERSION))
     Updates.universal_handler('update')
-    KrystalStartup()
+
+
+if __name__ == '__main__':
+    start()
+    KrystalInitialStartup()

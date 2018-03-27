@@ -3,13 +3,13 @@ import os
 
 # main
 ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT_OF_ROOT = os.path.dirname(os.path.abspath(ROOT))
 KRYSTAL = os.path.join(ROOT, 'krystal.py')
 
 # krystal
 VERSION = '0.90.3'
-UPDATEDUMP = os.path.join(ROOT, 'update')
-USER_INFO_MOVE_LOCATION = os.path.join(UPDATEDUMP, 'krystal-master/engine/etc/')
-EXISTING_UPDATE = os.path.join(ROOT, 'update/krystal-master/')
+TEMP_UPDATE_DIR = os.path.join(ROOT, 'krystal-master/')
+USER_INFO_MOVE_LOCATION = os.path.join(TEMP_UPDATE_DIR, 'engine/etc/userinfo.json')
 CONFIGJSON = os.path.join(ROOT, 'engine/etc/userinfo.json')
 DEFKEY = '23Able'
 

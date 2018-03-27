@@ -4,16 +4,17 @@ import textwrap
 import time
 import zipfile
 from datetime import datetime
-from os import rename
-from os.path import exists
+from os import system, mkdir
+from distutils.dir_util import copy_tree
+from shutil import rmtree, copyfile
 
 import requests
 
-from uni import ERROR_LOGGER, USER_INFO_MOVE_LOCATION, EXISTING_UPDATE
+from uni import ERROR_LOGGER, USER_INFO_MOVE_LOCATION, TEMP_UPDATE_DIR, ROOT
 
 
 class DailyUpdates:
-    def __init__(self, default, notify, update_dir, version_id, user_data_file):
+    def __init__(self, default, notify, version_id, user_data_file):
         """
             :param: default: Krystal's main API url - APIURL
             :param: notify: Krystal's notification API url - NOTIFICATION
@@ -24,7 +25,6 @@ class DailyUpdates:
         """
         self.default = default
         self.notify = notify
-        self.update_dir = update_dir
         self.version_id = version_id
         self.user_data_file = user_data_file
 
@@ -37,7 +37,7 @@ class DailyUpdates:
         :return:
         """
         if use == 'update':
-            print('Checking Able for updates...')
+            # print('Checking Able for updates...')
             time.sleep(2)
             params = dict(
                 version_id=self.version_id
@@ -53,22 +53,19 @@ class DailyUpdates:
                 new_version = input('You have an outdated or unmaintained version of Krystal. '
                                     'Download latest version? (y/n) ')
                 if new_version.lower() == 'y':
-                    if not exists(EXISTING_UPDATE):
-                        print('Downloading Krystal version {} ...'.format(vi))
-                        zipurl = requests.get(url)
-                        zippath = zipfile.ZipFile(io.BytesIO(zipurl.content))
-                        zippath.extractall(self.update_dir)
-
-                    if exists(self.user_data_file):
-                        rename(self.user_data_file, USER_INFO_MOVE_LOCATION)
-
-                    print('\nKrystal will shutdown. Please delete all content except the "update" folder, \ncopy the '
-                          'contents in the "update" folder to existing the Krystal directory.\nThen restart Krystal.')
-                    exit(1)
+                    print('Downloading Krystal version {} ...'.format(vi))
+                    source = requests.get(url)
+                    source_file = zipfile.ZipFile(io.BytesIO(source.content))
+                    copyfile(self.user_data_file, USER_INFO_MOVE_LOCATION)
+                    rmtree(ROOT)
+                    mkdir(ROOT)
+                    source_file.extractall(ROOT)
+                    copy_tree(TEMP_UPDATE_DIR, ROOT)
+                    rmtree(TEMP_UPDATE_DIR)
+                    print('Thank you for downloading. Please restart Krystal.')
+                    exit(0)
                 else:
                     pass
-            else:
-                print('Latest release\n')
 
         elif use == 'send_data':
             cur_date = datetime.now().strftime('%Y-%m-%d')
@@ -123,7 +120,7 @@ class DailyUpdates:
     def add_data(self, name, usrnm, aaid, email, message):
         data = {'name': '{}'.format(name),
                 'username': '{}'.format(usrnm),
-                'accessID': '{}'.format(aaid),
+                'AIKEY': '{}'.format(aaid),
                 'email': '{}'.format(email),
                 'verification': '{}'.format(message)
                 }
@@ -136,6 +133,6 @@ class DailyUpdates:
         with open(self.user_data_file, 'r') as userdata:
             data = json.load(userdata)
             name = data['name']
-            key = data['accessID']
-            return name, key
-
+            key = data['AIKEY']
+            userdata.close()
+        return name, key
