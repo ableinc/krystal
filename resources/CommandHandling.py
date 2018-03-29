@@ -9,7 +9,7 @@ import speech_recognition as sr
 from conversation import response
 from engine.operations.language_engine import DetailClassifier, InformationHandler
 from krystal import Detector, EXECUTABLE, returner
-from resources.helper import specialrequests, defaultrequests, uniquerequests, startrequests
+from resources.helper import specialrequests, defaultrequests, uniquerequests, startrequests, ALL_REQUEST_OPTIONS
 from uni import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG
 
 # initialize
@@ -17,7 +17,8 @@ r = sr.Recognizer()
 FOUNDIT = True
 stop = 0
 hold = []
-logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
+logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
+log_events = logging.getLogger('CommandHandling')
 
 
 def restart():
@@ -59,8 +60,8 @@ def KrystalCommands(sentence):
             specialRequests(whos_that=True)
         elif sentence == specialrequests[1]:
             specialRequests(whats_that=True)
-
-        for phrase in startrequests, defaultrequests, uniquerequests:
+        for i in range(0, len(ALL_REQUEST_OPTIONS)):
+            phrase = ALL_REQUEST_OPTIONS[i]
             if phrase in sentence:
                 print('phrase > ', phrase)
                 legnth_of_phrase = sentence.index(phrase) + len(phrase)
@@ -79,11 +80,9 @@ def KrystalCommands(sentence):
                 vocalfeedback(res)
     except ValueError as ve:
         vocalfeedback('Encountered an error')
-        ERROR_LOGGER.getLogger('ValueError')
-        ERROR_LOGGER(ve)
+        log_events.error(ve)
     except TypeError as te:
-        ERROR_LOGGER.getLogger('TypeError')
-        ERROR_LOGGER(te)
+        log_events.error(te)
     finally:
         backhome()
 

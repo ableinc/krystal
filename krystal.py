@@ -13,7 +13,9 @@ from uni import AUDIOMODEL, APIURL, CONFIGJSON, VERSION, NOTIFICATIONS, EVENT_LO
 Updates = DailyUpdates(APIURL, NOTIFICATIONS, VERSION, CONFIGJSON)
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
-logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
+logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
+log_events = logging.getLogger('Krystal_Main')
+now = 'Krystal started on ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
 Welcome = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI don't really know much about you.\n" \
           "Soooo, first thing first,\nif you're registered at AbleInc.us go ahead\nand enter your " \
@@ -59,11 +61,11 @@ class KrystalInitialStartup:
                 key = data['AIKEY']
                 usrnm = data['username']
                 if key and name:
-                    KrystalInitialStartup.hello(self, name)
                     status = Updates.universal_handler('status', opt=usrnm)
                     if status is False:
                         print(status)
                         exit(0)
+                    KrystalInitialStartup.hello(self, name)
                     userdata.close()
                 else:
                     KrystalInitialStartup.VerifyMember(self)
@@ -83,8 +85,6 @@ class KrystalInitialStartup:
             KrystalInitialStartup.hello(self, validUser)
 
     def hello(self, user):
-        now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-        logging.info('Started Krystal on ', now)
         print('Hello, {}\n'.format(user.title()))
         system('say -v Ava -r 185 "Hello {}"'.format(user))
         Updates.universal_handler('push', opt='user')
@@ -97,10 +97,11 @@ def start():
         print('At the moment {} is currently not supported. MacOS is currently the only '
               'supported platform.'.format(sys.platform))
         sys.exit(1)
-    print("\nKrystal Alpha ------------- {}\n".format(VERSION))
+    print("Krystal Alpha ------------- {}\n".format(VERSION))
     Updates.universal_handler('update')
 
 
 if __name__ == '__main__':
+    log_events.info(now)
     start()
     KrystalInitialStartup()

@@ -4,6 +4,7 @@ import re
 import string
 import webbrowser
 from os import system
+import logging
 
 import nltk
 import requests
@@ -11,7 +12,11 @@ from bs4 import BeautifulSoup
 from nltk.tokenize import sent_tokenize, word_tokenize
 
 from resources.helper import defaultrequests
-from uni import EAS_NEWDATA
+from uni import EAS_NEWDATA, EVENT_LOG
+
+logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.DEBUG)
+log_events = logging.getLogger('Language Engine')
+# logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.WARNING)
 
 """
 

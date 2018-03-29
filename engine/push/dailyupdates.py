@@ -7,7 +7,8 @@ from uni import EVENT_LOG, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYS
 
 main_script = KRYSTAL
 environ['GLOG_minloglevel'] = '2'
-logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
+logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
+log_events = logging.getLogger('Updates')
 
 
 class DailyUpdates:
@@ -91,12 +92,12 @@ class DailyUpdates:
             status = data['krystal'][0]
 
             if ((data and name and username and email) is None) or status == 'User Not Found':
-                logging.warning("User couldn't be found with given information")
+                log_events.info("User couldn't be found with given information")
                 print("Something went wrong. Verification may be down or information invalid.")
                 exit(0)
 
             if opt == '' and opt.isdigit():
-                logging.error('AbleAccess ID entry was left blank or non-numeric value')
+                log_events.error('AbleAccess ID entry was left blank or non-numeric value')
                 raise AttributeError('Invalid entry')
 
             message = "{0} ({1}) verified on ".format(name, opt)
@@ -129,7 +130,7 @@ class DailyUpdates:
             user_status = data['status'][0]
             resp.close()
             if user_status == 'banned':
-                logging.warning('User is banned from servers.')
+                log_events.info('User is banned from servers.')
                 msg = "Unfortunately you're banned. Do better things."
                 return False, msg
             return True
