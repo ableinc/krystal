@@ -9,7 +9,7 @@ import speech_recognition as sr
 
 # krystal
 from conversation import response
-from engine.operations.language_engine import LanguageEngine
+from engine.operations.language_engine import DetailClassifier, InformationHandler
 from krystal import Detector, EXECUTABLE, returner
 from resources.helper import specialrequests, defaultrequests, uniquerequests, startrequests
 from uni import TEST_FACES_DIR, FACES_MODEL
@@ -54,8 +54,6 @@ def startmic():
 
 
 def KrystalCommands(sentence):
-    AI = LanguageEngine()
-    new_info_handler = AI.InformationHandler()
     res = response.response(sentence)
     try:
         if sentence == specialrequests[0]:
@@ -69,22 +67,21 @@ def KrystalCommands(sentence):
                 legnth_of_phrase = sentence.index(phrase) + len(phrase)
                 string_after_phrase = sentence[legnth_of_phrase:]
                 print('command > ', string_after_phrase)
+                classify = DetailClassifier(phrase, string_after_phrase)
+                classify.isanoun()
                 if not string_after_phrase.startswith('your'):
-                    classify = AI.DetailClassifier(phrase, string_after_phrase)
-                    classify.isanoun()
                     legacy = classify.basic_legacy_operations()
                     print(legacy)
                     vocalfeedback(legacy)
                     returner(sentence)
                 else:
-                    new_info_handler.search_engine()
+                    InformationHandler.search_engine()
             else:
                 vocalfeedback(res)
     except ValueError:
         vocalfeedback('Encountered an error')
     finally:
         backhome()
-        return
 
 
 def specialRequests(whos_that=False, whats_that=False):

@@ -1,9 +1,8 @@
-import io, json, textwrap, time, zipfile
+import io, json, textwrap, time, zipfile, requests, tqdm
 from datetime import datetime
 from os import system, mkdir, environ
 from distutils.dir_util import copy_tree
 from shutil import rmtree, copy2
-import requests
 from uni import ERROR_LOGGER, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO
 
 main_script = KRYSTAL
@@ -65,7 +64,6 @@ class DailyUpdates:
                     exit(0)
                 else:
                     pass
-
         elif use == 'send_data':
             cur_date = datetime.now().strftime('%Y-%m-%d')
             user_name, user_id = DailyUpdates.get_user_name(self)
@@ -135,3 +133,4 @@ class DailyUpdates:
             key = data['AIKEY']
             userdata.close()
         return name, key
+

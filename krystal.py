@@ -12,7 +12,7 @@ from pathlib import Path
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 # krystal
-from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, NOTIFICATIONS
+from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, NOTIFICATIONS, ENGINE_DIR
 
 # initialize
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -55,8 +55,9 @@ def Detector():
 
 
 def importantFilesCheck():
-    if not exists(TEST_FACES_DIR):
+    if not exists(TEST_FACES_DIR or ENGINE_DIR):
         makedirs(TEST_FACES_DIR)
+        makedirs(ENGINE_DIR)
 
 
 class KrystalInitialStartup:
