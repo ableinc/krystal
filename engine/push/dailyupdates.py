@@ -1,12 +1,13 @@
-import io, json, textwrap, time, zipfile, requests, tqdm
+import io, json, textwrap, time, zipfile, requests, logging, tqdm
 from datetime import datetime
 from os import system, mkdir, environ
 from distutils.dir_util import copy_tree
 from shutil import rmtree, copy2
-from uni import ERROR_LOGGER, WARNING_LOGGER, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO
+from uni import EVENT_LOG, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO
 
 main_script = KRYSTAL
 environ['GLOG_minloglevel'] = '2'
+logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
 class DailyUpdates:
@@ -90,14 +91,12 @@ class DailyUpdates:
             status = data['krystal'][0]
 
             if ((data and name and username and email) is None) or status == 'User Not Found':
-                WARNING_LOGGER.getLogger('Verification')
-                WARNING_LOGGER("User couldn't be found with given information")
+                logging.warning("User couldn't be found with given information")
                 print("Something went wrong. Verification may be down or information invalid.")
                 exit(0)
 
             if opt == '' and opt.isdigit():
-                ERROR_LOGGER.getLogger('User Input')
-                ERROR_LOGGER('AbleAccess ID entry was left blank or non-numeric value')
+                logging.error('AbleAccess ID entry was left blank or non-numeric value')
                 raise AttributeError('Invalid entry')
 
             message = "{0} ({1}) verified on ".format(name, opt)
@@ -130,8 +129,7 @@ class DailyUpdates:
             user_status = data['status'][0]
             resp.close()
             if user_status == 'banned':
-                WARNING_LOGGER.getLogger('Status')
-                WARNING_LOGGER('User is banned from servers.')
+                logging.warning('User is banned from servers.')
                 msg = "Unfortunately you're banned. Do better things."
                 return False, msg
             return True

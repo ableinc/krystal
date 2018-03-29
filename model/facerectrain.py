@@ -6,15 +6,20 @@ AUTHOR: GITHUB: ageitgey - creator the face_recognition software used in Krystal
 
 from math import sqrt
 from sklearn import neighbors
-from os import listdir
+from os import listdir, environ
 from os.path import isdir, join
 import pickle
 from cv2 import *
+import warnings
 import face_recognition
 from face_recognition import face_locations
 from face_recognition.cli import image_files_in_folder
-from uni import KNOWNFACEFILES, SAVEDFACES
+from uni import TRAIN_FACES_DIR, TEST_FACES_DIR
 import sys
+
+environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+warnings.filterwarnings('ignore', '', category=RuntimeWarning)
+warnings.filterwarnings('ignore', '', category=FutureWarning)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -50,7 +55,7 @@ def train(train_dir, model_save_path="", n_neighbors=None, knn_algo='ball_tree',
 
 if __name__ == "__main__":
     sys.stdout.write('Started Training')
-    train(train_dir=KNOWNFACEFILES, model_save_path=SAVEDFACES, n_neighbors=3)
+    train(train_dir=TRAIN_FACES_DIR, model_save_path=TEST_FACES_DIR, n_neighbors=3)
     sys.stdout.write('Finished training')
 
 

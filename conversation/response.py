@@ -1,6 +1,12 @@
 # things we need for NLP
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
+from os import environ
+import warnings
+environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+warnings.filterwarnings('ignore', '', category=RuntimeWarning)
+warnings.filterwarnings('ignore', '', category=FutureWarning)
+
 import numpy as np
 import tflearn
 import random

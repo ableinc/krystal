@@ -1,15 +1,5 @@
 import os, logging
 
-
-def importantFilesCheck():
-    if not os.path.exists(TEST_FACES_DIR or ENGINE_DIR):
-        os.makedirs(TEST_FACES_DIR)
-        os.makedirs(ENGINE_DIR)
-    elif not os.path.isfile(EVENT_LOG):
-        W = open(EVENT_LOG, 'w')
-        W.close()
-
-
 # main
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ROOT_OF_ROOT = os.path.dirname(os.path.abspath(ROOT))
@@ -48,6 +38,14 @@ EAS_NEWDATA = os.path.join(ROOT, 'resources/newdata.json')
 # Able Inc. API
 APIURL = 'https://ableinc.us/krystal/api/v0/'
 NOTIFICATIONS = 'https://ableinc.us/krystal/push/'
+
+# create necessary files and directories
+if not os.path.exists(TEST_FACES_DIR or ENGINE_DIR):
+    os.makedirs(TEST_FACES_DIR)
+    os.makedirs(ENGINE_DIR)
+elif not os.path.isfile(EVENT_LOG):
+    W = open(EVENT_LOG, 'w')
+    W.close()
 
 # pre-processed
 ERROR_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)

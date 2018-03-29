@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 # python specific
-import logging
-import multiprocessing
-import sys
+import multiprocessing, sys, logging
 from os import system, execl, listdir, path
 
 import speech_recognition as sr
@@ -12,13 +10,14 @@ from conversation import response
 from engine.operations.language_engine import DetailClassifier, InformationHandler
 from krystal import Detector, EXECUTABLE, returner
 from resources.helper import specialrequests, defaultrequests, uniquerequests, startrequests
-from uni import TEST_FACES_DIR, FACES_MODEL
+from uni import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG
 
 # initialize
 r = sr.Recognizer()
 FOUNDIT = True
 stop = 0
 hold = []
+logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
 
 
 def restart():
@@ -37,7 +36,6 @@ def startmic():
             sys.stdout.write('Listening...\n')
             audio = r.listen(source=ausource)
             user = r.recognize_wit(audio, key='CGTT3OA7XGQCF3HOB2J4GBISOIXBUAZR')
-            logging.info(user)
             print('Audio Captured: {}\n'.format(user))
             # usersanitized = re.sub(r'[?|$.,!]', r'', user)
             KrystalCommands(user)
@@ -51,6 +49,7 @@ def startmic():
                 sys.stdout.write('Too many request errors.')
                 return
             startmic()
+    return
 
 
 def KrystalCommands(sentence):
@@ -78,8 +77,13 @@ def KrystalCommands(sentence):
                     InformationHandler.search_engine()
             else:
                 vocalfeedback(res)
-    except ValueError:
+    except ValueError as ve:
         vocalfeedback('Encountered an error')
+        ERROR_LOGGER.getLogger('ValueError')
+        ERROR_LOGGER(ve)
+    except TypeError as te:
+        ERROR_LOGGER.getLogger('TypeError')
+        ERROR_LOGGER(te)
     finally:
         backhome()
 
@@ -103,7 +107,7 @@ def specialRequests(whos_that=False, whats_that=False):
     return
 
 
-def vocalfeedback(phrase):
+def vocalfeedback(phrase, speed=''):
     # print(textwrap.wrap(phrase, 40) + '\n')
     try:
         sys.stdout.write(phrase)

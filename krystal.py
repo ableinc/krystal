@@ -1,23 +1,23 @@
 #! /usr/bin/env python3
 # python specific
-import json, signal, socket, sys, time
-from os import system, environ
+import json, signal, socket, sys, time, logging
+from os import system
 from pathlib import Path
 
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 # krystal
-from uni import AUDIOMODEL, APIURL, CONFIGJSON, VERSION, NOTIFICATIONS
+from uni import AUDIOMODEL, APIURL, CONFIGJSON, VERSION, NOTIFICATIONS, EVENT_LOG
 
 # initialize
-environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 Updates = DailyUpdates(APIURL, NOTIFICATIONS, VERSION, CONFIGJSON)
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
+logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
 
 Welcome = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI don't really know much about you.\n" \
           "Soooo, first thing first,\nif you're registered at AbleInc.us go ahead\nand enter your " \
-          "AbleAccess ID.\n"
+          "AI Key.\n"
 
 interrupted = False
 
@@ -56,14 +56,14 @@ class KrystalInitialStartup:
             with open(CONFIGJSON, 'r') as userdata:
                 data = json.load(userdata)
                 name = data['name']
-                key = data['accessID']
+                key = data['AIKEY']
                 usrnm = data['username']
                 if key and name:
                     KrystalInitialStartup.hello(self, name)
                     status = Updates.universal_handler('status', opt=usrnm)
                     if status is False:
                         print(status)
-                        exit(1)
+                        exit(0)
                     userdata.close()
                 else:
                     KrystalInitialStartup.VerifyMember(self)
@@ -77,12 +77,14 @@ class KrystalInitialStartup:
             KrystalInitialStartup.VerifyMember(self)
 
     def VerifyMember(self):
-        ableaccessID = input("AbleAccess ID: ")
+        ableaccessID = input("AI Key: ")
         validUser = Updates.universal_handler('verify', opt=ableaccessID)
         if validUser:
             KrystalInitialStartup.hello(self, validUser)
 
     def hello(self, user):
+        now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+        logging.info('Started Krystal on ', now)
         print('Hello, {}\n'.format(user.title()))
         system('say -v Ava -r 185 "Hello {}"'.format(user))
         Updates.universal_handler('push', opt='user')

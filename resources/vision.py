@@ -1,11 +1,18 @@
 import pickle
 from os.path import isfile, splitext
-
+from os import environ
+import warnings
+environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+warnings.filterwarnings('ignore', '', category=RuntimeWarning)
+warnings.filterwarnings('ignore', '', category=FutureWarning)
 import face_recognition
 from cv2 import *
 from face_recognition import face_locations
-
 from uni import TEST_FACES_DIR, TRAIN_FACES_DIR
+
+environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+warnings.filterwarnings('ignore', '', category=RuntimeWarning)
+warnings.filterwarnings('ignore', '', category=FutureWarning)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 unknown = 'Im not sure'
