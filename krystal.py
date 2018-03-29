@@ -1,18 +1,13 @@
 #! /usr/bin/env python3
 # python specific
-import json
-import signal
-import socket
-import sys
-import time
-from os import system, makedirs, environ
-from os.path import exists
+import json, signal, socket, sys, time
+from os import system, environ
 from pathlib import Path
 
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 # krystal
-from uni import AUDIOMODEL, APIURL, CONFIGJSON, TEST_FACES_DIR, VERSION, NOTIFICATIONS, ENGINE_DIR
+from uni import AUDIOMODEL, APIURL, CONFIGJSON, VERSION, NOTIFICATIONS
 
 # initialize
 environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -54,25 +49,22 @@ def Detector():
                    sleep_time=0.03)
 
 
-def importantFilesCheck():
-    if not exists(TEST_FACES_DIR or ENGINE_DIR):
-        makedirs(TEST_FACES_DIR)
-        makedirs(ENGINE_DIR)
-
-
 class KrystalInitialStartup:
     def __init__(self):
-        importantFilesCheck()
         FreshStart = Path(CONFIGJSON)
         if FreshStart.is_file():
             with open(CONFIGJSON, 'r') as userdata:
                 data = json.load(userdata)
                 name = data['name']
                 key = data['accessID']
+                usrnm = data['username']
                 if key and name:
                     KrystalInitialStartup.hello(self, name)
+                    status = Updates.universal_handler('status', opt=usrnm)
+                    if status is False:
+                        print(status)
+                        exit(1)
                     userdata.close()
-                    Detector()
                 else:
                     KrystalInitialStartup.VerifyMember(self)
                     userdata.close()

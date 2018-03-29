@@ -3,7 +3,7 @@ from datetime import datetime
 from os import system, mkdir, environ
 from distutils.dir_util import copy_tree
 from shutil import rmtree, copy2
-from uni import ERROR_LOGGER, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO
+from uni import ERROR_LOGGER, WARNING_LOGGER, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO
 
 main_script = KRYSTAL
 environ['GLOG_minloglevel'] = '2'
@@ -87,9 +87,17 @@ class DailyUpdates:
             name = data['krystal'][0]['user_info']['fname']
             username = data['krystal'][0]['user_info']['username']
             email = data['krystal'][0]['user_info']['email']
+            status = data['krystal'][0]
+
+            if ((data and name and username and email) is None) or status == 'User Not Found':
+                WARNING_LOGGER.getLogger('Verification')
+                WARNING_LOGGER("User couldn't be found with given information")
+                print("Something went wrong. Verification may be down or information invalid.")
+                exit(0)
 
             if opt == '' and opt.isdigit():
-                ERROR_LOGGER.error('AbleAccess ID entry was left blank or non-numeric value')
+                ERROR_LOGGER.getLogger('User Input')
+                ERROR_LOGGER('AbleAccess ID entry was left blank or non-numeric value')
                 raise AttributeError('Invalid entry')
 
             message = "{0} ({1}) verified on ".format(name, opt)
@@ -112,7 +120,21 @@ class DailyUpdates:
             print('\n'.join(textwrap.wrap(memo, width=40)))
             print('\n')
             resp.close()
-        return
+
+        elif use == 'status':
+            params = dict(
+                check_user=opt
+            )
+            resp = requests.get(url=self.notify, params=params)
+            data = json.loads(resp.text)
+            user_status = data['status'][0]
+            resp.close()
+            if user_status == 'banned':
+                WARNING_LOGGER.getLogger('Status')
+                WARNING_LOGGER('User is banned from servers.')
+                msg = "Unfortunately you're banned. Do better things."
+                return False, msg
+            return True
 
     def add_data(self, name, usrnm, aaid, email, message):
         data = {'name': '{}'.format(name),

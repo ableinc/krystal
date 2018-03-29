@@ -1,5 +1,14 @@
-import logging
-import os
+import os, logging
+
+
+def importantFilesCheck():
+    if not os.path.exists(TEST_FACES_DIR or ENGINE_DIR):
+        os.makedirs(TEST_FACES_DIR)
+        os.makedirs(ENGINE_DIR)
+    elif not os.path.isfile(EVENT_LOG):
+        W = open(EVENT_LOG, 'w')
+        W.close()
+
 
 # main
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -25,7 +34,7 @@ DET_PROTOTXT = os.path.join(ROOT, 'model/MobileNetSSD.prototxt.txt')
 DET_MODEL = os.path.join(ROOT, 'model/MobileNetSSD.caffemodel')
 
 # logs
-ERROR_LOG = os.path.join(ROOT, 'engine/etc/error.log')
+EVENT_LOG = os.path.join(ROOT, 'engine/etc/events.log') # this file will be sent to Able Inc for diagnostics
 
 # conversation
 PERSONMODEL = os.path.join(ROOT, 'conversation/krystal_beta_model')
@@ -41,4 +50,8 @@ APIURL = 'https://ableinc.us/krystal/api/v0/'
 NOTIFICATIONS = 'https://ableinc.us/krystal/push/'
 
 # pre-processed
-ERROR_LOGGER = logging.basicConfig(filename=ERROR_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)
+ERROR_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)
+DEBUG_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
+INFO_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+WARNING_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.WARNING)
+
