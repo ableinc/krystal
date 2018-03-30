@@ -7,9 +7,9 @@ import speech_recognition as sr
 
 # krystal
 from conversation import response
-from engine.operations.language_engine import DetailClassifier, InformationHandler
+from engine.operations.language_engine import DetailClassifier
 from krystal import Detector, EXECUTABLE, returner
-from resources.helper import specialrequests, defaultrequests, uniquerequests, startrequests, ALL_REQUEST_OPTIONS
+from resources.helper import specialrequests, ALL_REQUEST_OPTIONS
 from uni import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG
 
 # initialize
@@ -26,7 +26,7 @@ def restart():
 
 
 def backhome():
-    print('Background Enabled\n')
+    print('\nBackground Enabled\n')
     Detector()
 
 
@@ -62,6 +62,7 @@ def KrystalCommands(sentence):
             specialRequests(whats_that=True)
         for i in range(0, len(ALL_REQUEST_OPTIONS)):
             phrase = ALL_REQUEST_OPTIONS[i]
+            print(phrase)
             if phrase in sentence:
                 print('phrase > ', phrase)
                 legnth_of_phrase = sentence.index(phrase) + len(phrase)
@@ -75,9 +76,11 @@ def KrystalCommands(sentence):
                     vocalfeedback(legacy)
                     returner(sentence)
                 else:
-                    InformationHandler.search_engine()
+                    # InformationHandler.search_engine()
+                    vocalfeedback(res)
             else:
                 vocalfeedback(res)
+            break
     except ValueError as ve:
         vocalfeedback('Encountered an error')
         log_events.error(ve)
