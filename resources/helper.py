@@ -10,6 +10,3 @@ ALL_REQUEST_OPTIONS = ['who is that', 'what is that', 'open ', 'search google fo
 
 prefix = ['Madam', 'Mr.', 'Mrs.', 'Ms.', 'Sir']
 suffix = ['Sr.', 'Jr.', 'II', 'III', 'IV', 'V', 'VI']
-
-
-

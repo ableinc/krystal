@@ -54,7 +54,7 @@ class DetailClassifier(object):
             results = 'Opening ' + upper
             system('open -a /Applications/{}.app'.format(upper))
             return results
-        elif self.ai_sp == defaultrequests[1:3]:
+        elif 'search' in self.ai_sp:
             nospace = re.sub(r"\s+", '+', self.ai_so)
             finalstringrequest = 'https://www.google.com/search?q=' + nospace + '&ie=UTF-8'
             webbrowser.open_new(finalstringrequest)

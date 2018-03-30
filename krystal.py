@@ -3,7 +3,6 @@
 import json, signal, socket, sys, time, logging
 from os import system
 from pathlib import Path
-
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 # krystal
@@ -15,7 +14,7 @@ IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
 logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
 log_events = logging.getLogger('Krystal_Main')
-now = 'Krystal started on ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+start_datetime = 'Krystal started on ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
 Welcome = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI don't really know much about you.\n" \
           "Soooo, first thing first,\nif you're registered at AbleInc.us go ahead\nand enter your " \
@@ -79,8 +78,8 @@ class KrystalInitialStartup:
             KrystalInitialStartup.VerifyMember(self)
 
     def VerifyMember(self):
-        ableaccessID = input("AI Key: ")
-        validUser = Updates.universal_handler('verify', opt=ableaccessID)
+        AIKEY = input("AI Key: ")
+        validUser = Updates.universal_handler('verify', opt=AIKEY)
         if validUser:
             KrystalInitialStartup.hello(self, validUser)
 
@@ -102,6 +101,6 @@ def start():
 
 
 if __name__ == '__main__':
-    log_events.info(now)
+    log_events.info(start_datetime)
     start()
     KrystalInitialStartup()

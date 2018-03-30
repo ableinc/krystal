@@ -7,7 +7,7 @@ import speech_recognition as sr
 
 # krystal
 from conversation import response
-from engine.operations.language_engine import DetailClassifier
+from engine.operations.language_engine import DetailClassifier, InformationHandler
 from krystal import Detector, EXECUTABLE, returner
 from resources.helper import specialrequests, ALL_REQUEST_OPTIONS
 from uni import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG
@@ -62,25 +62,23 @@ def KrystalCommands(sentence):
             specialRequests(whats_that=True)
         for i in range(0, len(ALL_REQUEST_OPTIONS)):
             phrase = ALL_REQUEST_OPTIONS[i]
-            print(phrase)
             if phrase in sentence:
-                print('phrase > ', phrase)
-                legnth_of_phrase = sentence.index(phrase) + len(phrase)
-                string_after_phrase = sentence[legnth_of_phrase:]
-                print('command > ', string_after_phrase)
+                # print('phrase > ', phrase)
+                length_of_phrase = sentence.index(phrase) + len(phrase)
+                string_after_phrase = sentence[length_of_phrase:]
+                # print('command > ', string_after_phrase)
                 classify = DetailClassifier(phrase, string_after_phrase)
                 classify.isanoun()
                 if not string_after_phrase.startswith('your'):
                     legacy = classify.basic_legacy_operations()
-                    print(legacy)
                     vocalfeedback(legacy)
                     returner(sentence)
                 else:
-                    # InformationHandler.search_engine()
+                    # InformationHandler.search_engine() - check the conditions of response.py see if you can return
+                    # a value to determine when InformationHandler should be called. current conditions cause unwanted
+                    # results
                     vocalfeedback(res)
-            else:
-                vocalfeedback(res)
-            break
+                break
     except ValueError as ve:
         vocalfeedback('Encountered an error')
         log_events.error(ve)
