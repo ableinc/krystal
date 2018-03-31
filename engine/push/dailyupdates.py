@@ -96,7 +96,7 @@ class DailyUpdates:
                 print("Something went wrong. Verification may be down or information invalid.")
                 exit(0)
 
-            if opt == '' and opt.isdigit():
+            if opt == '' or not opt.isdigit():
                 log_events.error('AbleAccess ID entry was left blank or non-numeric value')
                 raise AttributeError('Invalid entry')
 
