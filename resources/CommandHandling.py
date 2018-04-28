@@ -65,10 +65,8 @@ def KrystalCommands(sentence):
         for i in range(0, len(ALL_REQUEST_OPTIONS)):
             phrase = ALL_REQUEST_OPTIONS[i]
             if phrase in sentence:
-                # print('phrase > ', phrase)
                 length_of_phrase = sentence.index(phrase) + len(phrase)
                 string_after_phrase = sentence[length_of_phrase:]
-                # print('command > ', string_after_phrase)
                 classify = DetailClassifier(phrase, string_after_phrase)
                 classify.isanoun()
                 if not string_after_phrase.startswith('your'):
