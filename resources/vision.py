@@ -1,7 +1,10 @@
 import pickle
-from os.path import isfile, splitext
-from os import environ
+import time
 import warnings
+from os import environ
+
+import os.path
+
 environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 warnings.filterwarnings('ignore', '', category=RuntimeWarning)
 warnings.filterwarnings('ignore', '', category=FutureWarning)
@@ -10,17 +13,13 @@ from cv2 import *
 from face_recognition import face_locations
 from uni import TEST_FACES_DIR, TRAIN_FACES_DIR
 
-environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-warnings.filterwarnings('ignore', '', category=RuntimeWarning)
-warnings.filterwarnings('ignore', '', category=FutureWarning)
-
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 unknown = 'Im not sure'
 
 
 def predict(X_img_path, knn_clf=None, model_save_path=TRAIN_FACES_DIR, DIST_THRESH=.5):
 
-    if not isfile(X_img_path) or splitext(X_img_path)[1][1:] not in ALLOWED_EXTENSIONS:
+    if not os.path.isfile(X_img_path) or os.path.splitext(X_img_path)[1][1:] not in ALLOWED_EXTENSIONS:
         raise Exception("invalid image path: {}".format(X_img_path))
 
     if knn_clf is None and model_save_path == "":
@@ -59,3 +58,11 @@ def snapshot():
         imwrite(TEST_FACES_DIR + "/{}.jpg".format(name.title()), img)  # save image
 
 
+def signInWithFace():
+    print('Please look at the camera. Adjust for great lighting')
+    cam = VideoCapture(0)
+    seconds = time.strftime("%S")
+    while cam.isOpened():
+        frame, img = cam.read()
+        if frame:
+            return 'Feature coming soon'

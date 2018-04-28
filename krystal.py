@@ -1,10 +1,17 @@
 #! /usr/bin/env python3
 # python specific
-import json, signal, socket, sys, time, logging
+import json
+import logging
+import signal
+import socket
+import sys
+import time
 from os import system
 from pathlib import Path
+
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
+from resources.helper import preferences
 # krystal
 from uni import AUDIOMODEL, APIURL, CONFIGJSON, VERSION, NOTIFICATIONS, EVENT_LOG
 
@@ -21,33 +28,6 @@ Welcome = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI do
           "AI Key.\n"
 
 interrupted = False
-
-
-def returner(data_to_send):
-    Updates.universal_handler(use='send_info', cmd=data_to_send)
-    return
-
-
-def signal_handler(signal, frame):
-    global interrupted
-    interrupted = True
-
-
-def interrupt_callback():
-    global interrupted
-    return interrupted
-
-
-def Detector():
-    # capture SIGINT signal, e.g., Ctrl+C
-    signal.signal(signal.SIGINT, signal_handler)
-
-    detector = snowboydecoder.HotwordDetector(AUDIOMODEL, sensitivity=0.5)
-
-    # main loop
-    detector.start(detected_callback=snowboydecoder.play_audio_file,
-                   interrupt_check=interrupt_callback,
-                   sleep_time=0.03)
 
 
 class KrystalInitialStartup:
@@ -91,6 +71,33 @@ class KrystalInitialStartup:
         return
 
 
+def returner(data_to_send):
+    Updates.universal_handler(use='send_info', cmd=data_to_send)
+    return
+
+
+def signal_handler(signal, frame):
+    global interrupted
+    interrupted = True
+
+
+def interrupt_callback():
+    global interrupted
+    return interrupted
+
+
+def Detector():
+    # capture SIGINT signal, e.g., Ctrl+C
+    signal.signal(signal.SIGINT, signal_handler)
+
+    detector = snowboydecoder.HotwordDetector(AUDIOMODEL, sensitivity=0.5)
+
+    # main loop
+    detector.start(detected_callback=snowboydecoder.play_audio_file,
+                   interrupt_check=interrupt_callback,
+                   sleep_time=0.03)
+
+
 def start():
     if not sys.platform.startswith('darwin') and (sys.version_info >= 3, 4):
         print('At the moment {} is currently not supported. MacOS is currently the only '
@@ -98,6 +105,15 @@ def start():
         sys.exit(1)
     print("Krystal Alpha ------------- {}\n".format(VERSION))
     Updates.universal_handler('update')
+
+
+def userPreferences():
+    print('Settings')
+    for count, option in enumerate(preferences):
+        print(count, ' --- ',  option)
+    selection = input('Option selection > ')
+    if selection == 0:
+        return 'not yet enabled '
 
 
 if __name__ == '__main__':

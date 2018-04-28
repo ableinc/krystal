@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
 
-from imutils.video import VideoStream
-from imutils.video import FPS
-from os import environ
 import warnings
+from os import environ
+
+from imutils.video import FPS
+from imutils.video import VideoStream
+
 environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 warnings.filterwarnings('ignore', '', category=RuntimeWarning)
 warnings.filterwarnings('ignore', '', category=FutureWarning)
@@ -12,10 +14,6 @@ import imutils
 import time
 import cv2
 from uni import DET_MODEL, DET_PROTOTXT
-
-environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-warnings.filterwarnings('ignore', '', category=RuntimeWarning)
-warnings.filterwarnings('ignore', '', category=FutureWarning)
 
 # Model and Prototxt
 

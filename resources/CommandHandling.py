@@ -1,15 +1,17 @@
 #! /usr/bin/env python3
 # python specific
-import multiprocessing, sys, logging
+import logging
+import multiprocessing
+import sys
 from os import system, execl, listdir, path
 
 import speech_recognition as sr
 
 # krystal
 from conversation import response
-from engine.operations.language_engine import DetailClassifier, InformationHandler
+from engine.operations.language_engine import DetailClassifier
 from krystal import Detector, EXECUTABLE, returner
-from resources.helper import specialrequests, ALL_REQUEST_OPTIONS
+from resources.helper import ALL_REQUEST_OPTIONS
 from uni import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG
 
 # initialize
@@ -56,9 +58,9 @@ def startmic():
 def KrystalCommands(sentence):
     res = response.response(sentence)
     try:
-        if sentence == specialrequests[0]:
+        if sentence == ALL_REQUEST_OPTIONS[0]:
             specialRequests(whos_that=True)
-        elif sentence == specialrequests[1]:
+        elif sentence == ALL_REQUEST_OPTIONS[1]:
             specialRequests(whats_that=True)
         for i in range(0, len(ALL_REQUEST_OPTIONS)):
             phrase = ALL_REQUEST_OPTIONS[i]

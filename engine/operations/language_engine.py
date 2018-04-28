@@ -1,17 +1,16 @@
 # This file was formally named 'Personification' that purpose was useless and has been replaced
 import json
+import logging
 import re
 import string
 import webbrowser
 from os import system
-import logging
 
 import nltk
 import requests
 from bs4 import BeautifulSoup
 from nltk.tokenize import sent_tokenize, word_tokenize
 
-from resources.helper import defaultrequests
 from uni import EAS_NEWDATA, EVENT_LOG
 
 logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.DEBUG)
@@ -125,7 +124,7 @@ class InformationHandler(object):
             requestlink = 'https://en.wikipedia.org/wiki/' + removedspace
             page = requests.get(requestlink)
             tree = BeautifulSoup(page.text, 'lxml')
-            data = [page.text for page in tree.find_all("span", class_="st")]
+            data = [page.text for page in tree.find_all("sup", class_="cite_ref-1")]
             page.close()
             InformationHandler.grab_sentence(data)
 
