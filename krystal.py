@@ -8,7 +8,6 @@ import sys
 import time
 from os import system
 from pathlib import Path
-
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 from resources.helper import preferences
@@ -71,6 +70,15 @@ class KrystalInitialStartup:
         return
 
 
+def run_demo_version(user):
+    print('Hello, {}\n'.format(user.title()))
+    system('say -v Ava -r 185 "Hello {}"'.format(user))
+    print("Thank you for using Krystal. When running in demo mode you will not receive push \n "
+          "notifications or automatic updates. This account is not personalized.")
+    Detector()
+    return
+
+
 def returner(data_to_send):
     Updates.universal_handler(use='send_info', cmd=data_to_send)
     return
@@ -98,13 +106,21 @@ def Detector():
                    sleep_time=0.03)
 
 
-def start():
-    if not sys.platform.startswith('darwin') and (sys.version_info >= 3, 4):
-        print('At the moment {} is currently not supported. MacOS is currently the only '
-              'supported platform.'.format(sys.platform))
-        sys.exit(1)
-    print("Krystal Alpha ------------- {}\n".format(VERSION))
-    Updates.universal_handler('update')
+def start(position):
+    if not isinstance(position, str):
+        raise AssertionError('Response must be string.')
+
+    if position == 'Y':
+        run_demo_version('demo user')
+
+    if position == 'N':
+        if not sys.platform.startswith('darwin') and (sys.version_info >= 3, 4):
+            print('At the moment {} is currently not supported. MacOS is currently the only '
+                  'supported platform.'.format(sys.platform))
+            sys.exit(1)
+        print("Krystal Alpha ------------- {}\n".format(VERSION))
+        Updates.universal_handler('update')
+        KrystalInitialStartup()
 
 
 def userPreferences():
@@ -118,5 +134,5 @@ def userPreferences():
 
 if __name__ == '__main__':
     log_events.info(start_datetime)
-    start()
-    KrystalInitialStartup()
+    user_input = input('Start as Demo? (Y/N) > ')
+    start(user_input.title())
