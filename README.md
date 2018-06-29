@@ -12,6 +12,7 @@ now and you should not expect full functionality from her. Some features have be
 # Use
 To use Krystal please register for an account on <a href="https://ableinc.us/access">Able Access</a>, there you will receive
 your own Able Access ID. This ID grants you access to all of Able's latest software.
+<b>Note: You can use Krystal in Demo mode.</b>
 <br>
 # Change Log:
 <b>0.90.3</b><br>
