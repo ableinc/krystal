@@ -1,4 +1,5 @@
 import os, logging
+from enum import Enum
 
 # main
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -35,10 +36,6 @@ PERSONMODEL_LOG = os.path.join(ROOT, 'conversation/tflearn_logs')
 # EAS
 EAS_NEWDATA = os.path.join(ROOT, 'resources/newdata.json')
 
-# Able Inc. API
-APIURL = 'https://ableinc.us/krystal/api/v0/'
-NOTIFICATIONS = 'https://ableinc.us/krystal/push/'
-
 # create necessary files and directories
 if not os.path.exists(TEST_FACES_DIR or ENGINE_DIR):
     os.makedirs(TEST_FACES_DIR)
@@ -47,9 +44,16 @@ elif not os.path.isfile(EVENT_LOG):
     W = open(EVENT_LOG, 'w')
     W.close()
 
+
+# Endpoints for Able Inc. API
+class Endpoints(Enum):
+    default = 'http://www.able.digital/krystal/api/v0'
+    notification = 'http://www.able.digital/krystal/push/'
+    localHost = 'http://localhost:3000/'
+
+
 # pre-processed
 # ERROR_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)
 # DEBUG_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
 # INFO_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 # WARNING_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.WARNING)
-

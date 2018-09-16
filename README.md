@@ -1,4 +1,5 @@
 # Krystal
+<b>Please Use Krystal In Demo Mode ONLY - Server Changes In Progress</b>
 - Author: Able (Jaylen Douglas)
 - Platform: MacOS (Windows and Linux Support in the future)<br>
 - Version: 0.90.3<br>

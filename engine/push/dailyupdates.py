@@ -86,7 +86,7 @@ class DailyUpdates:
             )
             resp = requests.get(url=self.default, params=params)
             data = json.loads(resp.text)
-            name = data['krystal'][0]['user_info']['fname']
+            name = data['krystal'][0]['user_info']['firstName']
             username = data['krystal'][0]['user_info']['username']
             email = data['krystal'][0]['user_info']['email']
             status = data['krystal'][0]
@@ -94,11 +94,12 @@ class DailyUpdates:
             if ((data and name and username and email) is None) or status == 'User Not Found':
                 log_events.info("User couldn't be found with given information")
                 print("Something went wrong. Verification may be down or information invalid.")
-                exit(0)
+                return None
 
             if opt == '' or not opt.isdigit():
                 log_events.error('AbleAccess ID entry was left blank or non-numeric value')
-                raise AttributeError('Invalid entry')
+                print('Invalid entry. Try again.')
+                return None
 
             message = "{0} ({1}) verified on ".format(name, opt)
             message += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
@@ -154,4 +155,3 @@ class DailyUpdates:
             key = data['AIKEY']
             userdata.close()
         return name, key
-

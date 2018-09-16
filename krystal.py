@@ -6,27 +6,36 @@ import signal
 import socket
 import sys
 import time
+from datetime import datetime
 from os import system
 from pathlib import Path
 from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 from resources.helper import preferences
 # krystal
-from uni import AUDIOMODEL, APIURL, CONFIGJSON, VERSION, NOTIFICATIONS, EVENT_LOG
+from uni import AUDIOMODEL, Endpoints, CONFIGJSON, VERSION, EVENT_LOG
 
 # initialize
-Updates = DailyUpdates(APIURL, NOTIFICATIONS, VERSION, CONFIGJSON)
+Updates = DailyUpdates(Endpoints.default.value, Endpoints.notification.value, VERSION, CONFIGJSON)
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
 logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
 log_events = logging.getLogger('Krystal_Main')
 start_datetime = 'Krystal started on ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+numberOfFailedLoginAttempts = []
 
 Welcome = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI don't really know much about you.\n" \
           "Soooo, first thing first,\nif you're registered at AbleInc.us go ahead\nand enter your " \
           "AI Key.\n"
 
 interrupted = False
+
+
+def checkForValidOS():
+    if not sys.platform.startswith('darwin') and (sys.version_info >= 3, 4):
+        print('MacOS is currently the only supported platform. \
+              Your platform: {}'.format(sys.platform))
+        exit()
 
 
 class KrystalInitialStartup:
@@ -59,8 +68,10 @@ class KrystalInitialStartup:
     def VerifyMember(self):
         AIKEY = input("AI Key: ")
         validUser = Updates.universal_handler('verify', opt=AIKEY)
-        if validUser:
+        if validUser is not None:
             KrystalInitialStartup.hello(self, validUser)
+        else:
+            KrystalInitialStartup.VerifyMember(self)
 
     def hello(self, user):
         print('Hello, {}\n'.format(user.title()))
@@ -73,7 +84,7 @@ class KrystalInitialStartup:
 def run_demo_version(user):
     print('Hello, {}\n'.format(user.title()))
     system('say -v Ava -r 185 "Hello {}"'.format(user))
-    print("Thank you for using Krystal. When running in demo mode you will not receive push \n "
+    print("Thank you for using Krystal. When running in demo mode you will not receive \n "
           "notifications or automatic updates. This account is not personalized.")
     Detector()
     return
@@ -106,20 +117,25 @@ def Detector():
                    sleep_time=0.03)
 
 
-def start(position):
-    if not isinstance(position, str):
-        raise AssertionError('Response must be string.')
+def startup(position):
+    if position.isdigit():
+        if len(numberOfFailedLoginAttempts) > 1:
+            numberOfFailedLoginAttempts.clear()
+            print('Too many login attempts. Program terminating. \
+                                 Try again later.')
+        else:
+            numberOfFailedLoginAttempts.append(datetime.today())
+            time.sleep(1)
+            print('Invalid entry. Please try again.')
+            print('Your last attempt was at: ', numberOfFailedLoginAttempts[-1])
+            initial()
 
     if position == 'Y':
         run_demo_version('demo user')
 
     if position == 'N':
-        if not sys.platform.startswith('darwin') and (sys.version_info >= 3, 4):
-            print('At the moment {} is currently not supported. MacOS is currently the only '
-                  'supported platform.'.format(sys.platform))
-            sys.exit(1)
         print("Krystal Alpha ------------- {}\n".format(VERSION))
-        Updates.universal_handler('update')
+        # Updates.universal_handler('update')  # automatic updates temporarily disabled
         KrystalInitialStartup()
 
 
@@ -132,7 +148,12 @@ def userPreferences():
         return 'not yet enabled '
 
 
-if __name__ == '__main__':
-    log_events.info(start_datetime)
+def initial():
     user_input = input('Start as Demo? (Y/N) > ')
-    start(user_input.title())
+    startup(user_input.title())
+
+
+if __name__ == '__main__':
+    checkForValidOS()
+    log_events.info(start_datetime)
+    initial()

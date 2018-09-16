@@ -21,7 +21,9 @@ words = data['words']
 classes = data['classes']
 train_x = data['train_x']
 train_y = data['train_y']
+import site
 
+site.setquit()
 # import our chat-bot intents file
 with open(PERSONMODEL_JSON) as json_data:
     intents = json.load(json_data)

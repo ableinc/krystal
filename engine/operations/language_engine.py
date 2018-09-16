@@ -5,7 +5,6 @@ import re
 import string
 import webbrowser
 from os import system
-
 import nltk
 import requests
 from bs4 import BeautifulSoup
@@ -22,7 +21,7 @@ log_events = logging.getLogger('Language Engine')
                             Environmental Adaption Protocol - Language Engine:
                                Handles all information gathered by Krystal.
 
-   
+
 
 """
 important_sentence = []
@@ -42,22 +41,22 @@ class DetailClassifier(object):
 
     """
     def __init__(self, search_parameter, search_object):
-        self.ai_sp = search_parameter
-        self.ai_so = search_object
-        self.full_parameter = self.ai_sp + self.ai_so
-        searchOGL.append(self.ai_so)
+        self.searchParameters = search_parameter
+        self.searchObject = search_object
+        self.full_parameter = self.searchParameters + self.searchObject
+        searchOGL.append(self.searchObject)
 
     def basic_legacy_operations(self):
-        if self.ai_sp == 'open':
-            upper = string.capwords(self.ai_so)
+        if 'open' in self.searchParameters:
+            upper = string.capwords(self.searchObject)
             results = 'Opening ' + upper
             system('open -a /Applications/{}.app'.format(upper))
             return results
-        elif 'search' in self.ai_sp:
-            nospace = re.sub(r"\s+", '+', self.ai_so)
+        elif 'search' in self.searchParameters:
+            nospace = re.sub(r"\s+", '+', self.searchObject)
             finalstringrequest = 'https://www.google.com/search?q=' + nospace + '&ie=UTF-8'
             webbrowser.open_new(finalstringrequest)
-            results = 'Searching Google for ' + self.ai_so
+            results = 'Searching Google for ' + self.searchObject
             return results
 
     def isanoun(self, decision=''):
@@ -66,7 +65,7 @@ class DetailClassifier(object):
                 - detect_name: this detects if each pair (0:1 += 1 < length of proper nouns
                 [first names, last names]) is related to one another by position, if so this is classified as a name
         """
-        objecttokenized = word_tokenize(self.ai_so, 'english')
+        objecttokenized = word_tokenize(self.searchObject, 'english')
         tagged_tokens = nltk.pos_tag(objecttokenized)
 
         if decision == 'detect_name':
@@ -74,9 +73,9 @@ class DetailClassifier(object):
             listlength = len(proper_noun)
             n = 0
             while n < listlength:
-                findfname = self.ai_so.find(''.join(proper_noun[n]))
+                findfname = self.searchObject.find(''.join(proper_noun[n]))
                 n += 1
-                findlname = self.ai_so.find(''.join(proper_noun[n]))
+                findlname = self.searchObject.find(''.join(proper_noun[n]))
                 if findfname:
                     back = n - 1
                     # wholename.append(proper_noun[back])
@@ -117,7 +116,7 @@ class InformationHandler(object):
             tree = BeautifulSoup(page.text, 'lxml')
             data = [page.text for page in tree.find_all("span", class_="st")]
             page.close()
-            InformationHandler.grab_sentence(data)
+            self.grab_sentence(data)
 
         if noun_type == 'NNP':
             removedspace = re.sub(r'\s+', '_', objectosearch)
@@ -126,7 +125,7 @@ class InformationHandler(object):
             tree = BeautifulSoup(page.text, 'lxml')
             data = [page.text for page in tree.find_all("sup", class_="cite_ref-1")]
             page.close()
-            InformationHandler.grab_sentence(data)
+            self.grab_sentence(data)
 
     @staticmethod
     def grab_sentence(data, object_from_search=''.join(searchOGL)):
@@ -163,7 +162,7 @@ class Misc(object):
         for i in range(1, len(sentence)):
             if not Misc.is_word_character(sentence[i]) and Misc.is_word_character(sentence[i - 1]):
                 c += 1
-        if Misc.is_word_character(sentence[-1]):
+        if self.is_word_character(sentence[-1]):
             c += 1
         if c != 250:
             c = 250
