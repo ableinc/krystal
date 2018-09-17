@@ -7,7 +7,7 @@ ROOT_OF_ROOT = os.path.dirname(os.path.abspath(ROOT))
 KRYSTAL = os.path.join(ROOT, 'krystal.py')
 
 # krystal
-VERSION = '0.90.3'
+VERSION = '0.90.4'
 TEMP_UPDATE_DIR = os.path.join(ROOT, 'krystal-master/') # grabbing zipfile path, this cannot be changed
 GRAB_USER_INFO = os.path.join(ROOT_OF_ROOT, 'userinfo.json') # userinfo.json temp location during update
 CONFIGJSON = os.path.join(ROOT, 'engine/etc/userinfo.json') # userinfo.json file location after update / original loc
