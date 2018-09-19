@@ -1,9 +1,9 @@
 # Krystal
-<b>Please Use Krystal In Demo Mode ONLY - Server Changes In Progress</b>
+<b>Please Use Krystal In Demo Mode ONLY - New registrations are currently offline (Existing members are OK)</b>
 - Author: Able (Jaylen Douglas)
 - Platform: MacOS (Windows and Linux Support in the future)<br>
 - Version: 0.90.4<br>
-- Required: brew install swig, sox, portaudio [Prefer doing before running depends.py]<br>
+- Required: brew install swig, sox, portaudio [Do this before running depends.py]<br>
 - Required: <i>tensorflow>=1.5, pyaudio, opencv-python, face_recognition, speechrecognition, tflearn, beautifulsoup</i> - You don't need to install these manually<br>
 - Python >= 3.4 Required<br><br>
 Krystal is intended to act as an intelligent friend you can always go to for a good conversation. 
@@ -17,7 +17,7 @@ your own Able Access ID. This ID grants you access to all of Able's latest softw
 <br>
 # Change Log:
 <b>0.90.4</b><br>
-1) All API services have been restored. [Temporarily Offline]
+1) All API services have been restored.
 2) Introducing notifications. You will now receive notifications directly from Able.
 3) Automatic updates [Temporarily Offline]
 4) Stepped on a few bugs (didn't hurt myself).
