@@ -13,10 +13,10 @@ from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 from resources.helper import preferences
 # krystal
-from uni import AUDIOMODEL, Endpoints, CONFIGJSON, VERSION, EVENT_LOG
+from uni import AUDIOMODEL, CONFIGJSON, VERSION, EVENT_LOG
 
 # initialize
-Updates = DailyUpdates(Endpoints.default.value, Endpoints.notification.value, VERSION, CONFIGJSON)
+Updates = DailyUpdates()
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
 logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
@@ -48,7 +48,7 @@ class KrystalInitialStartup:
                 key = data['AIKEY']
                 usrnm = data['username']
                 if key and name:
-                    status = Updates.universal_handler('status', opt=usrnm)
+                    status = Updates.universal_handler('status', option=usrnm)
                     if status is False:
                         print(status)
                         exit(0)
@@ -67,7 +67,7 @@ class KrystalInitialStartup:
 
     def VerifyMember(self):
         AIKEY = input("AI Key: ")
-        validUser = Updates.universal_handler('verify', opt=AIKEY)
+        validUser = Updates.universal_handler('verify', option=AIKEY)
         if validUser is not None:
             KrystalInitialStartup.hello(self, validUser)
         else:
@@ -76,7 +76,7 @@ class KrystalInitialStartup:
     def hello(self, user):
         print('Hello, {}\n'.format(user.title()))
         system('say -v Ava -r 185 "Hello {}"'.format(user))
-        Updates.universal_handler('push', opt='user')
+        Updates.universal_handler('push')
         Detector()
         return
 
@@ -90,8 +90,8 @@ def run_demo_version(user):
     return
 
 
-def returner(data_to_send):
-    Updates.universal_handler(use='send_info', cmd=data_to_send)
+def returner(userStatement, krystalStatement):
+    Updates.universal_handler(use='conversation', userStatement=userStatement, krystalStatement=krystalStatement)
     return
 
 

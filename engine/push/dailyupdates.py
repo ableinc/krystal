@@ -3,7 +3,7 @@ from datetime import datetime
 from os import system, mkdir, environ
 from distutils.dir_util import copy_tree
 from shutil import rmtree, copy2
-from uni import EVENT_LOG, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO
+from uni import EVENT_LOG, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO, VERSION, Endpoints
 
 main_script = KRYSTAL
 environ['GLOG_minloglevel'] = '2'
@@ -12,35 +12,30 @@ log_events = logging.getLogger('Updates')
 
 
 class DailyUpdates:
-    def __init__(self, default, notify, version_id, user_data_file):
-        """
-            :param: default: Krystal's main API url - APIURL
-            :param: notify: Krystal's notification API url - NOTIFICATION
-            :param: update_dir: the directory to store the update zip - UPDATEDUMP
-            :param: version_id: your current running version of Krystal - VERSION
-            :param: add_user_file: the API provided to fetch if the provided AbleAccess ID is valid - CONFIGJSON
+    def __init__(self):
+        self.endpoint = Endpoints
+        self.conversation = self.endpoint.conversations.value
+        self.notifications = self.endpoint.notification.value
+        self.system = self.endpoint.system.value
+        self.users = self.endpoint.users.value
+        self.version_id = VERSION
+        self.user_data_file = CONFIGJSON
 
-        """
-        self.default = default
-        self.notify = notify
-        self.version_id = version_id
-        self.user_data_file = user_data_file
-
-    def universal_handler(self, use, opt='', cmd=''):
+    def universal_handler(self, use, option='', userStatement='', krystalStatement=''):
         """
 
         :param use: the call to which command you would like to use
-        :param opt: the option you combined with the command (cmd) (i.e 'what is your' ... [cmd]
-        :param cmd:
+        :param
+        :param
         :return:
         """
         if use == 'update':
-            # print('Checking Able for updates...')
+            print('Checking Able for updates...')
             time.sleep(2)
             params = dict(
                 version_id=self.version_id
             )
-            resp = requests.get(url=self.default, params=params)
+            resp = requests.get(url=self.system, params=params)
             data = json.loads(resp.text)
             vi = data['krystal'][0]['versionid']
             # nm = data['krystal'][0]['name']
@@ -66,67 +61,67 @@ class DailyUpdates:
                     exit(0)
                 else:
                     pass
-        elif use == 'send_data':
-            cur_date = datetime.now().strftime('%Y-%m-%d')
-            user_name, user_id = DailyUpdates.get_user_name(self)
+        elif use == 'conversation':
+            aikey = self.getAiKey()
             params = dict(
-                id=user_id,
-                name=user_name,
-                version=self.version_id,
-                command=cmd,
-                date=cur_date
+                userStatment=userStatement,
+                krystalStatement=krystalStatement,
+                aikey=aikey,
             )
-            resp = requests.get(url=self.default, params=params)
+            resp = requests.get(url=self.notifications, params=params)
             if resp:
                 resp.close()
 
         elif use == 'verify':
             params = dict(
-                aid=opt
+                aikey=option
             )
-            resp = requests.get(url=self.default, params=params)
+            resp = requests.get(url=self.users, params=params)
             data = json.loads(resp.text)
-            name = data['krystal'][0]['user_info']['firstName']
-            username = data['krystal'][0]['user_info']['username']
-            email = data['krystal'][0]['user_info']['email']
+            role = data['krystal'][0]['role']
+            firstName = data['krystal'][0]['firstName']
+            lastName = data['krystal'][0]['lastName']
+            username = data['krystal'][0]['username']
+            email = data['krystal'][0]['email']
             status = data['krystal'][0]
 
-            if ((data and name and username and email) is None) or status == 'User Not Found':
+            if ((data and firstName and lastName and username and email) is None) or status == 'User Not Found':
                 log_events.info("User couldn't be found with given information")
                 print("Something went wrong. Verification may be down or information invalid.")
                 return None
 
-            if opt == '' or not opt.isdigit():
+            if option == '' or not option.isdigit():
                 log_events.error('AbleAccess ID entry was left blank or non-numeric value')
                 print('Invalid entry. Try again.')
                 return None
 
-            message = "{0} ({1}) verified on ".format(name, opt)
+            message = "{0} {1} ({2}) verified on ".format(firstName, lastName, option)
             message += time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-            if DailyUpdates.add_data(self, name, username, opt, email, message):
-                return name
+            if self.add_data(role, firstName, lastName, username, option, email, message):
+                return firstName
             resp.close()
 
         elif use == 'push':
             params = dict(
-                memo=opt
+                role=self.getUserRole()
             )
-            resp = requests.get(url=self.notify, params=params)
+            resp = requests.get(url=self.notifications, params=params)
             data = json.loads(resp.text)
-            name = data['memo'][0]['name']
+            publisher = data['memo'][0]['publisher']
             memo = data['memo'][0]['message']
             date = data['memo'][0]['date']
             print('Message from Able')
-            print(name + ',                       ' + date + '\n')
+            print(publisher + ',                       ' + date + '\n')
             print('\n'.join(textwrap.wrap(memo, width=40)))
             print('\n')
             resp.close()
 
         elif use == 'status':
+            # checks if user is banned by fetching AiKey by role
             params = dict(
-                check_user=opt
+                check_user=option
             )
-            resp = requests.get(url=self.notify, params=params)
+            resp = requests.get(url=self.notifications, params=params)
             data = json.loads(resp.text)
             user_status = data['status'][0]
             resp.close()
@@ -136,10 +131,12 @@ class DailyUpdates:
                 return False, msg
             return True
 
-    def add_data(self, name, usrnm, aaid, email, message):
-        data = {'name': '{}'.format(name),
-                'username': '{}'.format(usrnm),
-                'AIKEY': '{}'.format(aaid),
+    def add_data(self, role, firstName, lastName, username, aikey, email, message):
+        data = {'role': '{}'.format(role),
+                'firstName': '{}'.format(firstName),
+                'lastName': '{}'.format(lastName),
+                'username': '{}'.format(username),
+                'AIKEY': '{}'.format(aikey),
                 'email': '{}'.format(email),
                 'verification': '{}'.format(message)
                 }
@@ -148,10 +145,16 @@ class DailyUpdates:
         config.close()
         return True
 
-    def get_user_name(self):
+    def getAiKey(self):
         with open(self.user_data_file, 'r') as userdata:
             data = json.load(userdata)
-            name = data['name']
-            key = data['AIKEY']
+            aikey = data['AIKEY']
             userdata.close()
-        return name, key
+        return aikey
+
+    def getUserRole(self):
+        with open(self.user_data_file, 'r') as userdata:
+            data = json.load(userdata)
+            role = data['role']
+            userdata.close()
+        return role

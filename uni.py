@@ -47,9 +47,12 @@ elif not os.path.isfile(EVENT_LOG):
 
 # Endpoints for Able Inc. API
 class Endpoints(Enum):
-    default = 'http://www.able.digital/krystal/api/v0'
-    notification = 'http://www.able.digital/krystal/push/'
-    localHost = 'http://localhost:3000/'
+    conversations = 'http://able.digital/krystal/api/conversations'
+    notification = 'http://able.digital/krystal/api/push'
+    system = 'http://able.digital/krystal/api/system'
+    users = 'http://able.digital/krystal/api/users'
+    localHost = 'http://localhost:3000/'  # developer purposes - do not remove
+
 
 
 # pre-processed
