@@ -4,15 +4,14 @@ import logging
 import multiprocessing
 import sys
 from os import system, execl, listdir, path
-
 import speech_recognition as sr
-
+import webbrowser
 # krystal
 from conversation import response
-from engine.operations.language_engine import DetailClassifier
+from engine.operations import LanguageEngine
 from krystal import Detector, EXECUTABLE, returner
-from resources.helper import ALL_REQUEST_OPTIONS
-from uni import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG
+from resources.helper import ALL_REQUEST_OPTIONS, preferences
+from uni import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG, accessURL
 
 # initialize
 r = sr.Recognizer()
@@ -62,21 +61,21 @@ def KrystalCommands(sentence):
             specialRequests(whos_that=True)
         elif sentence == ALL_REQUEST_OPTIONS[1]:
             specialRequests(whats_that=True)
-        for i in range(0, len(ALL_REQUEST_OPTIONS)):
+        elif sentence == preferences[0] or sentence == preferences[1]:
+            vocalfeedback('Enable these features on Able Digital Access')
+            returner(sentence, 'Enable these features on Able Digital Access')
+            webbrowser.open_new(accessURL)
+        for i in range(len(ALL_REQUEST_OPTIONS[1:])):
             phrase = ALL_REQUEST_OPTIONS[i]
             if phrase in sentence:
                 length_of_phrase = sentence.index(phrase) + len(phrase)
                 string_after_phrase = sentence[length_of_phrase:]
-                classify = DetailClassifier(phrase, string_after_phrase)
-                classify.isanoun()
+                # phrase, string_after_phrase
                 if not string_after_phrase.startswith('your'):
-                    legacy = classify.basic_legacy_operations()
-                    vocalfeedback(legacy)
-                    returner(sentence)
+                    krystalReponse = LanguageEngine.LanguageEngine(words=sentence)
+                    vocalfeedback(krystalReponse)
+                    returner(userStatement=sentence, krystalStatement=krystalReponse)
                 else:
-                    # InformationHandler.search_engine() - check the conditions of response.py see if you can return
-                    # a value to determine when InformationHandler should be called. current conditions cause unwanted
-                    # results
                     vocalfeedback(res)
                 break
     except ValueError as ve:

@@ -5,6 +5,7 @@ from enum import Enum
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ROOT_OF_ROOT = os.path.dirname(os.path.abspath(ROOT))
 KRYSTAL = os.path.join(ROOT, 'krystal.py')
+accessURL = 'http://www.able.digital/access'
 
 # krystal
 VERSION = '0.90.4'
@@ -33,8 +34,8 @@ PERSONMODEL_TRAIN = os.path.join(ROOT, 'conversation/training_data')
 PERSONMODEL_JSON = os.path.join(ROOT, 'conversation/personality.json')
 PERSONMODEL_LOG = os.path.join(ROOT, 'conversation/tflearn_logs')
 
-# EAS
-EAS_NEWDATA = os.path.join(ROOT, 'resources/newdata.json')
+# Memory Engine
+MEMORY_NEWINFORMATION = os.path.join(ROOT, 'memory/newInformation.json')
 
 # create necessary files and directories
 if not os.path.exists(TEST_FACES_DIR or ENGINE_DIR):

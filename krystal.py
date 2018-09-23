@@ -13,13 +13,13 @@ from SBpy3 import snowboydecoder
 from engine.push.dailyupdates import DailyUpdates
 from resources.helper import preferences
 # krystal
-from uni import AUDIOMODEL, CONFIGJSON, VERSION, EVENT_LOG
+import uni
 
 # initialize
 Updates = DailyUpdates()
 IPADDR = socket.gethostbyname(socket.gethostname())
 EXECUTABLE = sys.executable
-logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
+logging.basicConfig(filename=uni.EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
 log_events = logging.getLogger('Krystal_Main')
 start_datetime = 'Krystal started on ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 numberOfFailedLoginAttempts = []
@@ -40,9 +40,9 @@ def checkForValidOS():
 
 class KrystalInitialStartup:
     def __init__(self):
-        FreshStart = Path(CONFIGJSON)
+        FreshStart = Path(uni.CONFIGJSON)
         if FreshStart.is_file():
-            with open(CONFIGJSON, 'r') as userdata:
+            with open(uni.CONFIGJSON, 'r') as userdata:
                 data = json.load(userdata)
                 name = data['name']
                 key = data['AIKEY']
@@ -109,7 +109,7 @@ def Detector():
     # capture SIGINT signal, e.g., Ctrl+C
     signal.signal(signal.SIGINT, signal_handler)
 
-    detector = snowboydecoder.HotwordDetector(AUDIOMODEL, sensitivity=0.5)
+    detector = snowboydecoder.HotwordDetector(uni.AUDIOMODEL, sensitivity=0.5)
 
     # main loop
     detector.start(detected_callback=snowboydecoder.play_audio_file,
@@ -134,7 +134,7 @@ def startup(position):
         run_demo_version('demo user')
 
     if position == 'N':
-        print("Krystal Alpha ------------- {}\n".format(VERSION))
+        print("Krystal Alpha ------------- {}\n".format(uni.VERSION))
         # Updates.universal_handler('update')  # automatic updates temporarily disabled
         KrystalInitialStartup()
 

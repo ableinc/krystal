@@ -1,25 +1,24 @@
-import io, json, textwrap, time, zipfile, requests, logging, tqdm
-from datetime import datetime
+import io, json, textwrap, time, zipfile, requests, logging
 from os import system, mkdir, environ
 from distutils.dir_util import copy_tree
 from shutil import rmtree, copy2
-from uni import EVENT_LOG, TEMP_UPDATE_DIR, ROOT, ROOT_OF_ROOT, CONFIGJSON, KRYSTAL, GRAB_USER_INFO, VERSION, Endpoints
+import uni
 
-main_script = KRYSTAL
+main_script = uni.KRYSTAL
 environ['GLOG_minloglevel'] = '2'
-logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
+logging.basicConfig(filename=uni.EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
 log_events = logging.getLogger('Updates')
 
 
 class DailyUpdates:
     def __init__(self):
-        self.endpoint = Endpoints
+        self.endpoint = uni.Endpoints
         self.conversation = self.endpoint.conversations.value
         self.notifications = self.endpoint.notification.value
         self.system = self.endpoint.system.value
         self.users = self.endpoint.users.value
-        self.version_id = VERSION
-        self.user_data_file = CONFIGJSON
+        self.version_id = uni.VERSION
+        self.user_data_file = uni.CONFIGJSON
 
     def universal_handler(self, use, option='', userStatement='', krystalStatement=''):
         """
@@ -37,11 +36,8 @@ class DailyUpdates:
             )
             resp = requests.get(url=self.system, params=params)
             data = json.loads(resp.text)
-            vi = data['krystal'][0]['versionid']
-            # nm = data['krystal'][0]['name']
-            url = data['krystal'][0]['url']
-            # vi_to_float = float(vi)
-            # version_to_float = float(self.version_id)
+            vi = data['krystal']['versionid']
+            url = data['krystal']['url']
             if vi != self.version_id:
                 new_version = input('You have an outdated or unmaintained version of Krystal. '
                                     'Download latest version? (y/n) ')
@@ -49,13 +45,13 @@ class DailyUpdates:
                     print('Downloading Krystal version {} ...'.format(vi))
                     source = requests.get(url)
                     source_file = zipfile.ZipFile(io.BytesIO(source.content))
-                    copy2(self.user_data_file, ROOT_OF_ROOT)
-                    rmtree(ROOT)
-                    mkdir(ROOT)
-                    source_file.extractall(ROOT)
-                    copy_tree(TEMP_UPDATE_DIR, ROOT)
-                    copy2(GRAB_USER_INFO, CONFIGJSON)
-                    rmtree(TEMP_UPDATE_DIR)
+                    copy2(self.user_data_file, uni.ROOT_OF_ROOT)
+                    rmtree(uni.ROOT)
+                    mkdir(uni.ROOT)
+                    source_file.extractall(uni.ROOT)
+                    copy_tree(uni.TEMP_UPDATE_DIR, uni.ROOT)
+                    copy2(uni.GRAB_USER_INFO, self.user_data_file)
+                    rmtree(uni.TEMP_UPDATE_DIR)
                     print('Thank you for downloading. Krystal will restart.')
                     system('python3 {}'.format(main_script))
                     exit(0)

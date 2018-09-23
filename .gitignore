@@ -33,3 +33,5 @@ fabric.properties
 *.iml
 modules.xml
 *.ipr
+unittests.py
+*/unittests.py
