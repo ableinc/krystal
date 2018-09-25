@@ -16,17 +16,32 @@ your own Able Access ID. This ID grants you access to all of Able's latest softw
 <b>Note: You can use Krystal in Demo mode.</b>
 <br>
 # Change Log:
-<b>0.90.4</b><br>
+Change log updates per commit. Version: <b>0.90.4</b><br>
+<b>MAJOR:</b> *Krystal's Responses Shortened Temporarily - Preparing for updates*
 1) All API services have been restored.
-2) Introducing notifications. You will now receive notifications directly from Able.
-3) Automatic updates [Temporarily Offline]
-4) Stepped on a few bugs (didn't hurt myself).
+2) Language engine was cleaned up. All information passed to Krystal will be categorized and stored for training later
+3) Next: <br />
+    - <b>Language Engine</b>
+        * Create algorithm that detects the context of the given user statement and appropriately use Krystal's trained
+        or on-demand resources to return an intelligent response.
+        * Stronger training algorithm, possibly using the assistance of the cloud
+    - <b>Command Handler</b>
+        * Optimized processes that call upon different function to handle and manipulate the same information
+    - <b>Training</b>
+        * In the next few iterations of Krystal you may notice (while doing a benchmark test) that this application
+        is consuming more power from your system. This is because as Krystal moves forward there will be 10% of dedicated
+         resources spent on creating training and evaluation data. This means all of what you say to Krystal will be 
+         stored and treated as data used to develop more sophisticated conversations with Krystal. 
+        * No third parties will EVER gather, store, or share your conversations with Krystal. Your conversations are 
+        completely created, stored, evaluated and trained locally and the binary files are sent back to Able's servers.
+        * When you login to <a href="http://www.able.digital/access">Able Access</a> you'll notice a 'Records' tab, 
+        as explained there all of what you say to Krystal and her replies are stored for your viewing. This introduces
+        transparency between us and you. If it's not in the records it has NEVER been stored by Able.
 # Heads up
 Planned updates and improvements | Completion dates:
 1) Krystal web application (any smartphone compatibility) | N/A
-2) Fresh, polished pre-built model for interaction | N/A
-3) Less dependency on 'on-the-spot' information gathering (upon model completion) | N/A
-4) Mobile application (not of importance at the moment, major changes to Krystal still needed) | N/A
+2) Less dependency on 'on-the-spot' information gathering (upon model completion) | N/A
+3) Mobile application (not of importance at the moment, major changes to Krystal still needed) | N/A
 
 # Starting Krystal: 
 Interacting with Krystal starts with: <i>"Hey Krystal" or "Krystal"</i><br>

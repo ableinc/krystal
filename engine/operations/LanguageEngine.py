@@ -3,11 +3,13 @@ import logging
 import re
 import string
 import webbrowser
-from os import system
+from os import system, path
 from threading import Thread
+from multiprocessing.pool import ThreadPool
 import requests
 from bs4 import BeautifulSoup
 import spacy
+import en_core_web_lg
 from nltk import sent_tokenize
 # krystal
 from uni import MEMORY_NEWINFORMATION, EVENT_LOG
@@ -22,9 +24,10 @@ responseFromInformationSearch = []
 entitiesTagging = []
 entitiesTaggingText = []
 
-# spacy configuration - 'x' for all language detection (currently unneeded & untested)
-defaultLanguage = 'en'
+# spacy configuration - 'xx' for all language detection (large models only)
+defaultLanguage = 'en_core_web_lg'
 nlp = spacy.load(defaultLanguage)  # declaration - nlp(u''.format([variable_containing_text]))
+# nlp = en_core_web_lg.load()
 
 """
         - self.words : titled text (used to determine noun type in part-of-speech detection)
@@ -50,7 +53,7 @@ nlp = spacy.load(defaultLanguage)  # declaration - nlp(u''.format([variable_cont
 
 class LanguageEngine:
     def __init__(self, words):
-        if not isinstance(defaultLanguage, str) or len(defaultLanguage) > 2:
+        if not isinstance(defaultLanguage, str):
             log_events.error('language must be two letter str value')
             return
 
@@ -69,7 +72,7 @@ class LanguageEngine:
             if token.pos_ == 'PROPN':
                 print(token.text, token.pos_, token.dep_)
                 partOfSpeechTagging.append('PROPN')
-                partOfSpeechTaggingText.append(token.text)
+                partOfSpeechTaggingText.append(self.removeWhitespace(token.text))
             if token.pos_ == 'NOUN':
                 print(token.text, token.pos_, token.dep_)
                 partOfSpeechTagging.append('NOUN')
@@ -99,12 +102,20 @@ class LanguageEngine:
                 entitiesTagging.append('PERSON')
                 entitiesTaggingText.append(ent.text)
             # print(ent.text, ent.start_char, ent.end_char, ent.label_)
-        sort(dictObject=dict(zip(partOfSpeechTaggingText, partOfSpeechTagging)))
+        # sort(documentObject=dict(zip(partOfSpeechTaggingText, partOfSpeechTagging)))
+        WorkerThread(documentObject=dict(zip(partOfSpeechTaggingText, partOfSpeechTagging)))
 
     def get_all_tokens(self):
         print('All Token Info')
         for num, token in enumerate(self.doc):
             print(num, token.text, token.pos_, token.dep_, '- head: ', token.head)
+
+    def removeWhitespace(self, text):
+        if ' ' in text:
+            cleanedText = re.sub(r"\s+", '_', text)
+            return cleanedText
+        else:
+            pass
 
 
 class AssistantOperations:
@@ -144,17 +155,21 @@ class InformationFetcher:
      This class is called when a user asks to search for something. Search features will be deprecated in the future to
      move Krystal away from a personal assistant and into a friend. (usually your friends don't make search requests for
      you)
-
-     This class is passed the following arguments:
-
-    - fetchObject = the object (word) that is going to be defined by search
-    - noun_type = discovered from the DetailClassifier class
-
      """
-    def __init__(self, fetchObject, noun):
+    def __init__(self, fetchObject, noun, getResponse=False, completeObject=None):
+        """
+        :param fetchObject: the object (word) that is going to be defined by search
+        :param noun: determined by part of speech (will later be changed to 'entity type'
+        :param getResponse: if we're looking to return as response to user - default: False
+                although ambiguous by definition getResponse will only be called if krystal's trained data returns with
+                False as a response.
+        :param completeObject: if getResponse is true then this should contain the given sentence by user - default: None
+        """
         self.objectToSearch = fetchObject
         self.nounType = noun
         self.data = None
+        self.getResponse = getResponse
+        self.completeObject = completeObject
         try:
             self.isName = dict(zip(entitiesTaggingText, entitiesTagging))
         except:
@@ -173,7 +188,7 @@ class InformationFetcher:
             page.close()
             self.data = data
         else:
-            removedspace = re.sub(r'\s+', '_', self.objectToSearch)
+            removedspace = re.sub(r'\s+', '_', ''.format(self.objectToSearch))
             requestlink = 'https://en.wikipedia.org/wiki/' + removedspace
             page = requests.get(requestlink)
             tree = BeautifulSoup(page.text, 'html5lib')
@@ -193,13 +208,116 @@ class InformationFetcher:
             else:
                 response.append(grab_sentences[0])
         self.processInformation(response)
+        return response
 
     def processInformation(self, response):
         if self.isName:
-            commitToMemory([self.objectToSearch, self.nounType], self.isName, response)
+            for word, isName in self.isName.items():
+                if word == self.objectToSearch:
+                    CommitToMemory([self.objectToSearch, self.nounType], True, response)
         else:
-            commitToMemory([self.objectToSearch, self.nounType], {}, response)
+            CommitToMemory([self.objectToSearch, self.nounType], False, response)
         return response
+
+    def getResponse(self):
+        with open(MEMORY_NEWINFORMATION, 'r') as jsonFile:
+            jsonObject = json.load(jsonFile)
+            print(jsonObject)
+
+
+def sort(documentObject):
+    """
+    :param documentObject: part of speech dictionary
+    :return:
+    """
+    # pool = ThreadPool(processes=1)
+    for word, posType in documentObject.items():
+        fetcherThread = Thread(target=InformationFetcher, args=(word, posType))
+        fetcherThread.daemon = False
+        fetcherThread.start()
+        InformationFetcher(word, posType)
+        # fetcher = InformationFetcher(fetchObject=word, noun=posType)
+        # async_result = pool.apply_async(func=fetcher.searchBasedOnNounType)
+        # print('Response from thread: ', async_result.get())
+
+
+class WorkerThread(Thread):
+    def __init__(self, documentObject):
+        super(WorkerThread, self).__init__()
+        self.documentObject = documentObject
+
+    def run(self):
+        for word, posType in self.documentObject.items():
+            InformationFetcher(fetchObject=word, noun=posType)
+
+
+class CommitToMemory:
+    # entryAndPOS (Dictionary): fetchedObject and part of speech
+    # entities (Boolean): (currently) contains true or false to if entry (word) is a name or not
+    # response (String): the results of the fetched Object; the Information
+    # pos: part of speech
+
+    def __init__(self, entryAndPOS, entities, response):
+        print('Preparing Data...')
+        self.entryAndPOS = entryAndPOS
+        self.entities = entities
+        self.response = response
+        self.initialInputData = {
+            "memory": [
+                {
+                    "entry": "{}".format(self.entryAndPOS[0] if self.entryAndPOS[0] else None),
+                    "name": "{}".format(self.entities),
+                    "pos": "{}".format(''.join(self.entryAndPOS[1] if self.entryAndPOS[1] else None)),
+                    "responses": "{}".format(self.response if self.response else None)
+                }
+            ]
+        }
+        self.updatedInputData = \
+            {
+                "entry": "{}".format(self.entryAndPOS[0] if self.entryAndPOS[0] else None),
+                "name": "{}".format(self.entities),
+                "pos": "{}".format(''.join(self.entryAndPOS[1] if self.entryAndPOS[1] else None)),
+                "responses": "{}".format(self.response if self.response else None)
+            }
+        print('Preparation Done.')
+        self.write()
+
+    def write(self):
+        print('Committing To Memory...')
+        try:
+            if not path.exists(MEMORY_NEWINFORMATION):
+                print('Initial Dump.')
+                with open(MEMORY_NEWINFORMATION, mode='w', encoding='utf-8') as newJson:
+                    json.dump(obj=self.initialInputData, fp=newJson, sort_keys=True, indent=4, separators=(',', ': '))
+                newJson.close()
+            else:
+                print('Update Dump')
+                with open(MEMORY_NEWINFORMATION, mode='r+', encoding='utf-8') as updateJson:
+                    jsonObject = json.load(updateJson)
+                    jsonObject.append(self.updatedInputData)
+                    json.dump(obj=jsonObject, fp=updateJson)
+                updateJson.close()
+        except json.JSONDecodeError as je:
+            raise je
+        except ValueError as ve:
+            raise ve
+        except IOError as ioe:
+            raise ioe
+        except TypeError as te:
+            raise te
+        except KeyError as ke:
+            raise ke
+        finally:
+            self.close()
+
+    @staticmethod
+    def close():
+        partOfSpeechTagging.clear()
+        partOfSpeechTaggingText.clear()
+        entitiesTagging.clear()
+        entitiesTaggingText.clear()
+        print('Committed.')
+        return
 
 
 class Misc:
@@ -220,61 +338,3 @@ class Misc:
         if c != 250:
             c = 250
         return c
-
-
-def sort(dictObject):
-    for word, entityType in dictObject.items():
-        fetcherThread = Thread(target=InformationFetcher, args=(word, entityType))
-        fetcherThread.daemon = False
-        fetcherThread.start()
-
-
-def commitToMemory(entryAndPOS, entities, response):
-    # entryAndPOS : fetchedObject and part of speech
-    # entities : (currently) contains true or false conditions to determine if given entry is or is not a name
-    # response = the results of the fetched Object; the Information
-    # pos: part of speech
-    print('Committing To Memory...')
-    initialInputData = {'memory': {
-            'entry': '{}'.format(entryAndPOS[0] if entryAndPOS[0] else None),
-            'is_name': '{}'.format(nameCypher(entities, entryAndPOS[0])),
-            'pos': '{}'.format(''.join(entryAndPOS[1] if entryAndPOS[1] else None)),
-            'responses': '{}'.format(response if response else None)
-        }
-    }
-
-    updatedInputData = {
-            'entry': '{}'.format(entryAndPOS[0] if entryAndPOS[0] else None),
-            'is_name': '{}'.format(nameCypher(entities, entryAndPOS[0])),
-            'pos': '{}'.format(''.join(entryAndPOS[1] if entryAndPOS[1] else None)),
-            'responses': '{}'.format(response if response else None)
-    }
-    # r+ to read and write in parallel
-    with open(MEMORY_NEWINFORMATION, 'r+') as newInfoJson:
-        if len(newInfoJson.readline(0)) > 0:
-            print('\t Updating')
-            jsonObject = json.load(newInfoJson)
-            jsonObject.update(updatedInputData)
-            json.dump(obj=jsonObject, fp=newInfoJson, sort_keys=True, indent=4, separators=(',', ': '))
-        else:
-            print('\t Dumping')
-            json.dump(obj=initialInputData, fp=newInfoJson, sort_keys=True, indent=4, separators=(',', ': '))
-
-    newInfoJson.close()
-    partOfSpeechTagging.clear()
-    partOfSpeechTaggingText.clear()
-    entitiesTagging.clear()
-    entitiesTaggingText.clear()
-    print('Committed.')
-    return
-
-
-def nameCypher(nameDict, entry):
-    try:
-        for text, isName in nameDict.items():
-            if text == entry:
-                return True
-            else:
-                return False
-    except:
-        return False

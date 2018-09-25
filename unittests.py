@@ -1,8 +1,14 @@
 from engine.operations import LanguageEngine
 from uni import MEMORY_NEWINFORMATION
+import json
+import pprint
+from multiprocessing.pool import ThreadPool
 
-m = open(MEMORY_NEWINFORMATION, 'w')
-m.close()
 
-LanguageEngine.LanguageEngine(words="i wonder could i ever meet barack obama, that would be really cool. "
-                                    "barack obama seems nice")
+def process(sentence):
+    LanguageEngine.LanguageEngine(words=sentence)
+
+
+if __name__ == '__main__':
+    words = "i wonder could i ever meet barack obama. barack obama seems nice"
+    process(sentence=words)

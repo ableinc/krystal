@@ -65,19 +65,20 @@ def KrystalCommands(sentence):
             vocalfeedback('Enable these features on Able Digital Access')
             returner(sentence, 'Enable these features on Able Digital Access')
             webbrowser.open_new(accessURL)
-        for i in range(len(ALL_REQUEST_OPTIONS[1:])):
-            phrase = ALL_REQUEST_OPTIONS[i]
-            if phrase in sentence:
-                length_of_phrase = sentence.index(phrase) + len(phrase)
-                string_after_phrase = sentence[length_of_phrase:]
-                # phrase, string_after_phrase
-                if not string_after_phrase.startswith('your'):
-                    krystalReponse = LanguageEngine.LanguageEngine(words=sentence)
-                    vocalfeedback(krystalReponse)
-                    returner(userStatement=sentence, krystalStatement=krystalReponse)
-                else:
-                    vocalfeedback(res)
-                break
+        vocalfeedback(res)
+        # for i in range(len(ALL_REQUEST_OPTIONS[1:])):
+        #     phrase = ALL_REQUEST_OPTIONS[i]
+        #     if phrase in sentence:
+        #         length_of_phrase = sentence.index(phrase) + len(phrase)
+        #         string_after_phrase = sentence[length_of_phrase:]
+        #         # phrase, string_after_phrase
+        #         if not string_after_phrase.startswith('your'):
+        #             krystalReponse = LanguageEngine.LanguageEngine(words=sentence)
+        #             vocalfeedback(krystalReponse)
+        #             returner(userStatement=sentence, krystalStatement=krystalReponse)
+        #         else:
+        #             vocalfeedback(res)
+        #         break
     except ValueError as ve:
         vocalfeedback('Encountered an error')
         log_events.error(ve)
