@@ -32,10 +32,10 @@ interrupted = False
 
 
 def checkForValidOS():
-    if not sys.platform.startswith('darwin') and (sys.version_info >= 3, 4):
-        print('MacOS is currently the only supported platform. \
-              Your platform: {}'.format(sys.platform))
-        exit()
+    if sys.platform.startswith('darwin') and sys.version_info == (3, 4):
+        return True
+    else:
+        return 'MacOS is currently the only supported platform. Your platform: {}'.format(sys.platform)
 
 
 class KrystalInitialStartup:
@@ -154,6 +154,12 @@ def initial():
 
 
 if __name__ == '__main__':
-    checkForValidOS()
-    log_events.info(start_datetime)
-    initial()
+    if sys.platform.startswith('darwin') and sys.version_info >= (3, 4):
+        log_events.info(start_datetime)
+        initial()
+    else:
+        print('MacOS is the only supported platform with Python version 3.4 or higher.'
+              '\nYour platform & python version: {0} with python {1}.{2}.{3}'.format(sys.platform, sys.version_info.major,
+                                                                             sys.version_info.minor,
+                                                                             sys.version_info.micro))
+        exit(1)

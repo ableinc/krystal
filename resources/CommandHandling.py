@@ -65,7 +65,10 @@ def KrystalCommands(sentence):
             vocalfeedback('Enable these features on Able Digital Access')
             returner(sentence, 'Enable these features on Able Digital Access')
             webbrowser.open_new(accessURL)
-        vocalfeedback(res)
+        elif res != "":
+            vocalfeedback(res)
+        else:
+            vocalfeedback("Sorry, I can't help at the moment.")
         # for i in range(len(ALL_REQUEST_OPTIONS[1:])):
         #     phrase = ALL_REQUEST_OPTIONS[i]
         #     if phrase in sentence:
