@@ -1,8 +1,10 @@
 # things we need for NLP
+import warnings
+from os import environ
+
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
-from os import environ
-import warnings
+
 environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 warnings.filterwarnings('ignore', '', category=RuntimeWarning)
 warnings.filterwarnings('ignore', '', category=FutureWarning)
@@ -12,7 +14,7 @@ import tflearn
 import random
 import pickle
 import json
-from uni import PERSONMODEL, PERSONMODEL_TRAIN, PERSONMODEL_JSON, PERSONMODEL_LOG
+from root import PERSONMODEL, PERSONMODEL_TRAIN, PERSONMODEL_JSON, PERSONMODEL_LOG
 
 # restore all of our data structures
 stemmer = LancasterStemmer()
@@ -35,7 +37,7 @@ net = tflearn.fully_connected(net, 8)
 net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
 net = tflearn.regression(net)
 
-# Define model and setup tensorboard
+# Define models and setup tensorboard
 model = tflearn.DNN(net, tensorboard_dir=PERSONMODEL_LOG)
 
 
@@ -67,7 +69,7 @@ def bow(sentence, words, show_details=False):
 # print(p)
 # print(classes)
 
-# load our saved model
+# load our saved models
 model.load(PERSONMODEL)
 
 # create a data structure to hold user context
@@ -76,7 +78,7 @@ ERROR_THRESHOLD = 0.25
 
 
 def classify(sentence):
-    # generate probabilities from the model
+    # generate probabilities from the models
     results = model.predict([bow(sentence, words)])[0]
     # filter out predictions below a threshold
     results = [[i, r] for i, r in enumerate(results) if r > ERROR_THRESHOLD]

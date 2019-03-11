@@ -1,54 +1,40 @@
-import subprocess, sys
+import io
+import shlex
+import subprocess
+from os.path import dirname, abspath
 
-pythonLibraries = ['tensorflow', 'pyaudio', 'opencv-python', 'face_recognition', 'speechrecognition',
-                   'tflearn', 'beautifulsoup', 'imutils']
+from root import check_valid_sys_requirements
 
-homebrewdependencies = ['portaudio', 'sox', 'swig']
+python_libraries = ['tensorflow==1.10', 'netifaces', 'deepspeech', 'webrtcvad', 'halo', 'pyaudio', 'opencv-python',
+                    'face_recognition', 'SpeechRecognition', 'tflearn', 'beautifulsoup', 'imutils', 'spacy', 'nltk',
+                    'snowboy', 'beautifulsoup4', 'sklearn', 'requests', 'pyttsx3', 'pyobjc', 'uvloop', 'dlib']
 
-# Krystal has not been tested on Python 3.7, though below you can install dependencies if you have 3.7. Please
-# contact me via Github.com/ableinc or at http://able.digital/#contact to inform me if everything is compatible
-
-
-def installPythonLibraries(pkg):
-    if sys.version_info == (3, 7):
-        subprocess.run(['pip', 'install', '--upgrade', '{}'.format(pkg)], capture_output=subprocess.PIPE)
-    else:
-        subprocess.run(['pip', 'install', '--upgrade', '{}'.format(pkg)], stdout=subprocess.PIPE)
+homebrew_formulas = ['cmake', 'portaudio', 'sox', 'swig']
 
 
-def installBrewDependencies(pkg):
-    if sys.version_info == (3, 7):
-        subprocess.run(['brew', 'install', '{}'.format(pkg)], capture_output=subprocess.PIPE)
-    else:
-        subprocess.run(['brew', 'install', '{}'.format(pkg)], stdout=subprocess.PIPE)
+def reader(buffer, title=None):
+    print(f'{title}: ', '  '.join((io.TextIOWrapper(buffer.stderr, encoding='utf-8'))))
+    return
 
 
-def launchKrystal():
-    if sys.version_info == (3, 7):
-        subprocess.run(['python3', 'krystal.py'], capture_output=subprocess.PIPE)
-    else:
-        subprocess.run(['python3', 'krystal.py'], stdout=subprocess.PIPE)
-    exit(0)
+def executor(app, pkg=None):
+    commands = {
+        'brew': f'brew install {pkg}',
+        'brew update': 'brew update',
+        'python': f'pip install {pkg}',
+        'spacy': 'python -m spacy download en_core_web_lg'
+    }
+    command_line = commands.get(app, None)
+    command = shlex.split(command_line)
+    reader(subprocess.Popen(command, stderr=subprocess.PIPE, cwd=dirname(abspath(__file__))), app)
+    return
 
 
 if __name__ == '__main__':
-    if sys.platform.startswith('darwin') and sys.version_info >= (3, 4):
-        print('This file will install all dependencies and libraries needed to run Krystal. Please do not interrupt.')
-        subprocess.run(['brew', 'update'], stdout=subprocess.PIPE)
-
-        for dep in homebrewdependencies:
-            installBrewDependencies(dep)
-
-        for lib in pythonLibraries:
-            installPythonLibraries(lib)
-
-        print('Installation complete. Running Krystal.')
-        launchKrystal()
-    else:
-        print('MacOS is the only supported platform with Python version 3.4 or higher.'
-              '\nYour platform & python version: {0} with python {1}.{2}.{3}'.format(sys.platform,
-                                                                                     sys.version_info.major,
-                                                                                     sys.version_info.minor,
-                                                                                     sys.version_info.micro))
-        exit(0)
-
+    check_valid_sys_requirements()
+    print('Installing dependencies for Krystal. Please do not interrupt.')
+    executor('brew update')
+    for x in homebrew_formulas: executor('brew', x)
+    for x in python_libraries: executor('python', x)
+    executor('spacy')
+    print('Complete. You can now start Krystal.')

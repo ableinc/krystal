@@ -34,4 +34,5 @@ fabric.properties
 modules.xml
 *.ipr
 unittests.py
-*/unittests.py
+temp/
+dev/

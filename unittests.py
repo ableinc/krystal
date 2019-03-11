@@ -1,8 +1,4 @@
 from engine.operations import LanguageEngine
-from uni import MEMORY_NEWINFORMATION
-import json
-import pprint
-from multiprocessing.pool import ThreadPool
 
 
 def process(sentence):

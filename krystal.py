@@ -1,97 +1,122 @@
 #! /usr/bin/env python3
-# python specific
 import json
 import logging
 import signal
-import socket
 import sys
 import time
-from datetime import datetime
-from os import system
+from os import environ
 from pathlib import Path
-from SBpy3 import snowboydecoder
+
+import netifaces
+
 from engine.push.dailyupdates import DailyUpdates
-from resources.helper import preferences
-# krystal
-import uni
+from resources.command_handling import command_handler, process_request_text
+from resources.verbal_feedback import verbal_feedback
+from root import USER_JSON, EVENT_LOG, AUDIO_MODEL, check_valid_sys_requirements, initialize_env_variables
+from snowboy import snowboydecoder
 
 # initialize
-Updates = DailyUpdates()
-IPADDR = socket.gethostbyname(socket.gethostname())
-EXECUTABLE = sys.executable
-logging.basicConfig(filename=uni.EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.INFO)
-log_events = logging.getLogger('Krystal_Main')
-start_datetime = 'Krystal started on ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-numberOfFailedLoginAttempts = []
-
-Welcome = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI don't really know much about you.\n" \
-          "Soooo, first thing first,\nif you're registered at AbleInc.us go ahead\nand enter your " \
-          "AI Key.\n"
+welcome_msg = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI don't really know much about you.\n" \
+              "Soooo, first thing first,\nif you're registered at AbleInc.us go ahead\nand enter your " \
+              "AI Key.\n"
 
 interrupted = False
 
 
-def checkForValidOS():
-    if sys.platform.startswith('darwin') and sys.version_info == (3, 4):
-        return True
+def determine_execution():
+    print(f"Krystal Alpha ------------- {environ['VERSION']}\n")
+    position = input('Start as Demo? (y/n) > ')
+    if position.lower() == 'y':
+        Startup(demo=True)
     else:
-        return 'MacOS is currently the only supported platform. Your platform: {}'.format(sys.platform)
+        Updates.universal_handler('update')
+        Startup()
 
 
-class KrystalInitialStartup:
-    def __init__(self):
-        FreshStart = Path(uni.CONFIGJSON)
-        if FreshStart.is_file():
-            with open(uni.CONFIGJSON, 'r') as userdata:
+class Startup:
+    def __init__(self, demo=False):
+        self.data = None
+        self.demo = demo
+        self.first_name = None
+
+        if self.demo:
+            self.first_name = 'demo user'
+            self.run_demo_version()
+            # self.test()
+            return
+
+    def start(self):
+        user_json_file = Path(USER_JSON)
+        try:
+            if not user_json_file.is_file():
+                sys.stdout.write("Oh my goodness! Hello You!\nThis is our first time meeting :)")
+                for word in welcome_msg:
+                    sys.stdout.write(word)
+                    sys.stdout.flush()
+                    time.sleep(0.5)
+                self.verify_member()
+                return
+
+            with open(USER_JSON, 'r') as userdata:
                 data = json.load(userdata)
                 name = data['name']
                 key = data['AIKEY']
-                usrnm = data['username']
-                if key and name:
-                    status = Updates.universal_handler('status', option=usrnm)
-                    if status is False:
-                        print(status)
-                        exit(0)
-                    KrystalInitialStartup.hello(self, name)
-                    userdata.close()
-                else:
-                    KrystalInitialStartup.VerifyMember(self)
-                    userdata.close()
-        else:
-            sys.stdout.write("Oh my goodness! Hello You!\nThis is our first time meeting :)")
-            for word in Welcome:
-                sys.stdout.write(word)
-                sys.stdout.flush()
-                time.sleep(0.10)
-            KrystalInitialStartup.VerifyMember(self)
+                username = data['username']
 
-    def VerifyMember(self):
-        AIKEY = input("AI Key: ")
-        validUser = Updates.universal_handler('verify', option=AIKEY)
-        if validUser is not None:
-            KrystalInitialStartup.hello(self, validUser)
-        else:
-            KrystalInitialStartup.VerifyMember(self)
+            self.first_name = name
+            status = Updates.universal_handler('status', payload=username)
+            if status[0] is False:
+                print(status[1])
+                sys.exit()
+            self.run_main_version()
+        except KeyError:
+            self.verify_member()
 
-    def hello(self, user):
-        print('Hello, {}\n'.format(user.title()))
-        system('say -v Ava -r 185 "Hello {}"'.format(user))
+    def verify_member(self):
+        print('Verifying account...')
+        aikey = input("AI Key: ")
+        valid_user = Updates.universal_handler('verify', payload=aikey)
+        if valid_user is None:
+            print('Could not verify user account. Exiting program.')
+            sys.exit()
+        self.first_name = valid_user
+        self.run_main_version()
+
+    def hello(self):
+        verbal_feedback(phrase=f'Hello, {self.first_name.title()}', vocal_tone='misc', vocal_speed=185,
+                        vocal_volume=0.55)
+
+    def test(self):
+        try:
+            while True:
+                request = input('Yes? > ')
+                prefix, str_concat = process_request_text(request)
+                command_handler(True, (prefix, str_concat))
+        except KeyboardInterrupt:
+            sys.exit()
+
+    def run_main_version(self):
+        self.hello()
         Updates.universal_handler('push')
-        Detector()
-        return
+        hey_krytal()
+
+    def run_demo_version(self):
+        self.hello()
+        print("Thank you for using Krystal. In demo mode you will not receive\n"
+              "notifications or automatic updates. This account is not personalized.")
+        while bool(environ['AUTO_REFRESH']):
+            hey_krytal()
 
 
-def run_demo_version(user):
-    print('Hello, {}\n'.format(user.title()))
-    system('say -v Ava -r 185 "Hello {}"'.format(user))
-    print("Thank you for using Krystal. When running in demo mode you will not receive \n "
-          "notifications or automatic updates. This account is not personalized.")
-    Detector()
-    return
-
-
-def returner(userStatement, krystalStatement):
-    Updates.universal_handler(use='conversation', userStatement=userStatement, krystalStatement=krystalStatement)
+def returner(user_statement, krystal_statement):
+    """
+    Sends spoken and response conversation to Able servers. Conversation
+    logs are kept for users to view in the Able Access Conversation Portal.
+    :param user_statement: the user spoken dialogue
+    :param krystal_statement: krystal's response to user
+    :return:
+    """
+    Updates.universal_handler(use='conversation', user_statement=user_statement, krystal_statement=krystal_statement)
     return
 
 
@@ -105,61 +130,50 @@ def interrupt_callback():
     return interrupted
 
 
-def Detector():
+def hey_krytal():
+    """
+    Detects "Hey Krystal"
+    :return:
+    """
     # capture SIGINT signal, e.g., Ctrl+C
     signal.signal(signal.SIGINT, signal_handler)
 
-    detector = snowboydecoder.HotwordDetector(uni.AUDIOMODEL, sensitivity=0.5)
+    detector = snowboydecoder.HotwordDetector(AUDIO_MODEL, sensitivity=0.5)
 
     # main loop
     detector.start(detected_callback=snowboydecoder.play_audio_file,
                    interrupt_check=interrupt_callback,
                    sleep_time=0.03)
 
+    detector.terminate()
 
-def startup(position):
-    if position.isdigit():
-        if len(numberOfFailedLoginAttempts) > 1:
-            numberOfFailedLoginAttempts.clear()
-            print('Too many login attempts. Program terminating. \
-                                 Try again later.')
-        else:
-            numberOfFailedLoginAttempts.append(datetime.today())
-            time.sleep(1)
-            print('Invalid entry. Please try again.')
-            print('Your last attempt was at: ', numberOfFailedLoginAttempts[-1])
-            initial()
-
-    if position == 'Y':
-        run_demo_version('demo user')
-
-    if position == 'N':
-        print("Krystal Alpha ------------- {}\n".format(uni.VERSION))
-        # Updates.universal_handler('update')  # automatic updates temporarily disabled
-        KrystalInitialStartup()
-
-
-def userPreferences():
-    print('Settings')
-    for count, option in enumerate(preferences):
-        print(count, ' --- ',  option)
-    selection = input('Option selection > ')
-    if selection == 0:
-        return 'not yet enabled '
-
-
-def initial():
-    user_input = input('Start as Demo? (Y/N) > ')
-    startup(user_input.title())
+    verbal_feedback('Yes?')
+    if not command_handler():
+        log_events.error('COMMAND HELPER FAILURE')
+        environ['AUTO_REFRESH'] = 'False'
+    else:
+        log_events.info('command handler - success')
 
 
 if __name__ == '__main__':
-    if sys.platform.startswith('darwin') and sys.version_info >= (3, 4):
-        log_events.info(start_datetime)
-        initial()
-    else:
-        print('MacOS is the only supported platform with Python version 3.4 or higher.'
-              '\nYour platform & python version: {0} with python {1}.{2}.{3}'.format(sys.platform, sys.version_info.major,
-                                                                             sys.version_info.minor,
-                                                                             sys.version_info.micro))
-        exit(1)
+    initialize_env_variables()
+    check_valid_sys_requirements()
+    # Logger
+    logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s',
+                        level=logging.INFO)
+    log_events = logging.getLogger('krystal.py')
+    start_datetime = f' Started on {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))}'
+    try:
+        ip4 = netifaces.ifaddresses('en0')[netifaces.AF_INET][0]['addr']
+        ip6 = netifaces.ifaddresses('en0')[netifaces.AF_INET6][0]['addr']
+    except KeyError:
+        ip4 = netifaces.ifaddresses('en7')[netifaces.AF_INET][0]['addr']
+        ip6 = netifaces.ifaddresses('en7')[netifaces.AF_INET6][0]['addr']
+    network_msg = f' Network Info - IP4: {ip4}, IP6: {ip6}'
+    log_events.info(start_datetime)
+    log_events.info(network_msg)
+
+    # Updates library
+    Updates = DailyUpdates()
+    # Start application
+    determine_execution()
