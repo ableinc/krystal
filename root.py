@@ -40,12 +40,13 @@ DETECT_DONG = path.join(ROOT, "snowboy/resources/dong.wav")
 AUDIO_MODEL = path.join(ROOT, 'snowboy/resources/Krystal.pmdl')
 
 # Memory Engine
-MEMORY_NEW_INFORMATION = path.join(ROOT, 'memory/newInformation.json')
+MEMORY_ROOT = path.join(ROOT, 'memory')
+MEMORY_NEW_INFORMATION = path.join(MEMORY_ROOT, 'memory.json')
 
 # create necessary files and directories
-if not path.exists(TEST_FACES_DIR):
-    makedirs(TEST_FACES_DIR)
-    makedirs(TEMP_DATA_DIR)
+for x in [TEST_FACES_DIR, TEMP_DATA_DIR, MEMORY_ROOT]:
+    if not path.exists(x):
+        makedirs(x)
 
 
 def initialize_env_variables():

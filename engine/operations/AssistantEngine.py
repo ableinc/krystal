@@ -32,7 +32,7 @@ class AssistantOperations:
 
 
 class InformationFetcher:
-    def __init__(self, full_context_dict: dict):
+    def __init__(self, full_context_dict: dict, self_start: bool = False):
         """
         This class is used by Krystal to gather information from the web for later training.
         This is how Krystal learns new information, as well as when and how to use it. She
@@ -41,14 +41,30 @@ class InformationFetcher:
         ** Features will be deprecated in the future **
 
         :param full_context_dict: part of speech dictionary from Language Engine
+        :param self_start: automatic memory commit (threading)
         """
-        self.full_context_dict = full_context_dict,
+        self.full_context_dict = full_context_dict
+        self.self_start = self_start
         self.online_content = None
+        self.parse_dict_information()
 
     def parse_dict_information(self):
-        for word, properties in self.full_context_dict:
-            search_sentence = self.search_based_on_noun_type(properties['pos'], word)
-            self.full_context_dict[word]['response'] = search_sentence
+        response = self.full_context_dict['response']
+        phrase = list(self.full_context_dict.keys())[0]
+        try:
+            for word, properties in self.full_context_dict[phrase]:
+                if properties['definition'] == '':
+                    search_sentence = self.search_based_on_noun_type(properties['pos'], word)
+                    self.full_context_dict[phrase][word]['response'] = search_sentence
+            if response == '':
+                sentence = self.search_based_on_noun_type('phrase', phrase)
+                self.full_context_dict['response'] = sentence
+            if self.self_start:
+                self.send_for_memory_commit()
+        except ValueError as ve:
+            print(f'ValueError in InformationFetcher {ve}')
+        except KeyError as ke:
+            print(f'KeyError in InformationFetcher {ke}')
 
     def search_based_on_noun_type(self, noun_type, word):
         if noun_type == 'PROPN':
@@ -82,6 +98,9 @@ class InformationFetcher:
 
     def send_for_memory_commit(self):
         CommitToMemory(memory=self.full_context_dict)
+
+    def return_full_memory_object(self):
+        return self.full_context_dict
 
     @staticmethod
     def get_memories():

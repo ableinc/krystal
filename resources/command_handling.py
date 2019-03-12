@@ -5,11 +5,9 @@ import sys
 import webbrowser
 from os import listdir, path
 from threading import Thread
-
 import speech_recognition as sr
-
 from conversation import response
-from engine.operations import LanguageEngine, AssistantEngine
+from engine.operations import LanguageEngine, AssistantEngine, MemoryCommit
 from resources.speech import speech_recognizer
 from resources.verbal_feedback import verbal_feedback
 from resources.vocab import available_request_commands, statement_types
@@ -22,16 +20,21 @@ log_events = logging.getLogger('CommandHandling')
 
 
 def command_handler(test: bool = False, args: tuple = None):
-    if test and args is not None:
-        t = Thread(target=process_available_commands, args=args)
-        t.daemon = False
-        t.start()
-        return True
-    sentence, str_concat = capture_request_deepspeech()
-    t = Thread(target=process_available_commands, args=(sentence, str_concat))
+    t = Thread(target=_setup_flow_for_thread, args=(test, args))
     t.daemon = False
     t.start()
     return True
+
+
+def _setup_flow_for_thread(test: bool = False, args: tuple = None):
+    if test and args is not None:
+        sentence, str_concat = args
+        memory_object = process_available_commands(sentence, str_concat)
+    else:
+        sentence, str_concat = capture_request_deepspeech()
+        memory_object = process_available_commands(sentence, str_concat)
+    full_memory_object = AssistantEngine.InformationFetcher(memory_object).return_full_memory_object()
+    MemoryCommit.CommitToMemory(full_memory_object)
 
 
 def capture_request_wit():
@@ -83,12 +86,12 @@ def process_request_text(txt):
     except TypeError:
         result = 'NoneValueType', 'NoneValueType'
     finally:
-        print(f'RESULT: {result}')
         return result
 
 
 def process_available_commands(request, string_concat):
     txt_type = determine_statement_type(request)
+    known = False
     message = ''
     try:
         if request == 'NoneValueType':
@@ -111,6 +114,7 @@ def process_available_commands(request, string_concat):
             AssistantEngine.AssistantOperations('open', application)
             message = string_concat.format(application)
         elif request != '':
+            known = True
             res = response.response(request)
             message = string_concat.format(res)
         else:
@@ -128,8 +132,10 @@ def process_available_commands(request, string_concat):
     finally:
         print(f'Statement type: {str(txt_type).title()}')
         verbal_feedback(message, vocal_speed=195)
-        print('Sending information to Language Engine')
-        LanguageEngine.LanguageEngine(request)
+        if known and message != 'None':
+            return LanguageEngine.LanguageEngine(request, request, message).controlled_flow()
+        else:
+            return LanguageEngine.LanguageEngine(request, request).controlled_flow()
 
 
 def special_requests(whos_that=False, whats_that=False):

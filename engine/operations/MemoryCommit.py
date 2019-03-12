@@ -30,13 +30,20 @@ class CommitToMemory:
             else:
                 memory_file = StringIO(open(MEMORY_NEW_INFORMATION, 'r', encoding='utf-8').read())
                 memory_file_object = json.load(memory_file)
-                memory_file_object.update(self.memory)
+                different_keys = memory_file_object - self.memory
+                if different_keys is not None:
+                    memory_file_object.update(different_keys)
+                else:
+                    memory_file_object.update(self.memory)
 
                 with open(MEMORY_NEW_INFORMATION, mode='w', encoding='utf-8') as updateJson:
                     json.dump(obj=memory_file_object, fp=updateJson, sort_keys=True, indent=4, separators=(',', ': '))
         except json.JSONDecodeError as je:
             print(f'Json Decoder Error: {je}')
             self.error = je
+        except TypeError as te:
+            print(f'TypeError in MemoryCommit: {te}')
+            self.error = te
         finally:
             if self.error is not None:
                 print(f'Failed to commit object to memory: \n{self.memory}')

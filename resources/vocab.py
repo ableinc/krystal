@@ -99,6 +99,8 @@ statement_types = {
         'then',
         'find',
         'look',
-        'search'
+        'search',
+        'hello',
+        'goodbye'
     }
 }

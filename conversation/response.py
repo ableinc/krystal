@@ -74,7 +74,7 @@ model.load(PERSONMODEL)
 
 # create a data structure to hold user context
 context = {}
-ERROR_THRESHOLD = 0.25
+ERROR_THRESHOLD = 0.75
 
 
 def classify(sentence):
