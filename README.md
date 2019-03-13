@@ -4,10 +4,9 @@
 - Version: 0.91.0
 - Required: [Skip to 'Getting Started']
 - Python >= 3.6 Required<br><br>
-Krystal is intended to act as an intelligent friend you can always go to for a good conversation.
-She will learn you as a person and will accompany you when there may not be anyone else. <br><br>
-Krystal is in <b>Alpha</b> testing
-now and you should not expect full functionality from her. Some features have been deprecated but may still show in the code. She will will be updated with algorithms that will achieve the goal of an artificially intelligent friend. Right now she is very basic but that is the point.
+
+Krystal is in <b>Alpha</b> testing.
+
 # Use
 To use Krystal please register for an account on <a href="https://www.able.digital#access">Able Access</a>, there you will receive
 your own AiKey. This key grants you access to all of Able's software.
@@ -69,11 +68,9 @@ model can detect by checking the resources > Detection.py file.
 <br />
 <b>Personality & Thoughts</b><br />
 Krystal contains a very simple personality model that contains general information about her such as her name, age or
-creator. She is only invoked when a specific or relatively specific question is asked with a high probability of
-matching her knowledge. As stable updates are released in the coming time Krystal's personality model with expand with
-complexity and will begin to adapt to conversation in real-time as an artificially intelligent "human", or android for
-this purpose. Feel free to add information about Krystal, though in the future this will be removed. Krystal is intended
-to always be running and will only gather information when activated.<br>
+creator. This is only invoked when a specific question or type of question is asked. As stable updates are released Krystal's 
+personality model will expand in complexity and will begin to respond in conversation like dialogue.
+Krystal is intended to always be running and will only gather information when activated.<br>
 
 # Demo Mode
 1) Data is not personalized in this mode. Meaning, Krystal will not have any information about you (i.e. your name or habits).
