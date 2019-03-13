@@ -18,8 +18,8 @@ EXECUTABLE = sys.executable
 # models
 TRAIN_DATA = path.join(ROOT, 'models/train/traindata.json')
 TEST_DATA = path.join(ROOT, 'models/test/testdata.json')
-TRAIN_FACES_DIR = path.join(ROOT, 'models/train')
-TEST_FACES_DIR = path.join(ROOT, 'models/test')
+TRAIN_FACES_DIR = path.join(ROOT, 'models/vision/train')
+TEST_FACES_DIR = path.join(ROOT, 'models/vision/test')
 FACES_MODEL = path.join(ROOT, 'models/faces.ai')
 DET_PROTOTXT = path.join(ROOT, 'models/MobileNetSSD.prototxt.txt')
 DET_MODEL = path.join(ROOT, 'models/MobileNetSSD.caffemodel')
@@ -43,8 +43,11 @@ AUDIO_MODEL = path.join(ROOT, 'snowboy/resources/Krystal.pmdl')
 MEMORY_ROOT = path.join(ROOT, 'memory')
 MEMORY_NEW_INFORMATION = path.join(MEMORY_ROOT, 'memory.json')
 
+# Screenshots / Faceshots
+SCREENSHOT_SAVE_PATH = path.join(TEMP_DATA_DIR, 'screenshots/')
+
 # create necessary files and directories
-for x in [TEST_FACES_DIR, TEMP_DATA_DIR, MEMORY_ROOT]:
+for x in [TEST_FACES_DIR, TEMP_DATA_DIR, MEMORY_ROOT, SCREENSHOT_SAVE_PATH]:
     if not path.exists(x):
         makedirs(x)
 
@@ -86,6 +89,15 @@ def check_valid_sys_requirements():
               f"\nYour platform: {[sys.platform if str(sys.platform) != 'darwin' else 'MacOS'][0]}\n"
               f"Your python version: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
         sys.exit()
+
+
+class NullDevice:
+    def write(self, s):
+        pass
+
+    def flush(self):
+        pass
+
 
 # pre-processed
 # ERROR_LOGGER = logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(message)s', level=logging.ERROR)

@@ -8,9 +8,7 @@ import zipfile
 from distutils.dir_util import copy_tree
 from os import system, mkdir, environ
 from shutil import rmtree, copy2
-
 import requests
-
 import root
 
 main_script = root.KRYSTAL
@@ -141,6 +139,12 @@ class DailyUpdates:
             role = data['role']
             userdata.close()
         return role
+
+    def get_username(self):
+        with open(self.user_data_file, 'r') as userdata:
+            data = json.load(userdata)
+            username = data['username']
+        return username
 
     def update_software(self, url, vi, mode='git'):
         if mode is 'git':

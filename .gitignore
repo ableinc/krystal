@@ -36,3 +36,4 @@ modules.xml
 unittests.py
 temp/
 dev/
+memory/

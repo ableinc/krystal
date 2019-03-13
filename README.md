@@ -20,11 +20,12 @@ Feel free to open the file to check each individual package.
 3) Run 'python3 krystal.py'
 
 # Change Log:
-Date: March 12, 2019 - Version: <b>0.91.0</b>
+Date: March 13, 2019 - Version: <b>0.91.0</b>
 
-1) Threading operations simplified
-2) All knowledge given is processed, organized and stored locally (Memory)
-3) You can run requests via terminal entry by uncommenting line 45 and commenting line 44 on krystal.py (run as normal)
+1) Training algorithm has been added; not connected
+2) Error handling updated. Current bug in fetching new information; happens often but not always.
+3) "Who's that" command has been simplified and should return accurately every time. ("Whats that" still offline)
+3) You can run requests via terminal (instead of speech) by uncommenting line 45 and commenting line 44 on krystal.py (run as normal)
 
 # Heads up
 Planned updates and improvements | Completion dates:

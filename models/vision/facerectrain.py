@@ -14,7 +14,7 @@ from os.path import isdir, join
 import face_recognition
 from cv2 import *
 from face_recognition import face_locations
-from face_recognition.cli import image_files_in_folder
+from face_recognition.face_recognition_cli import image_files_in_folder
 from sklearn import neighbors
 
 from root import TRAIN_FACES_DIR, TEST_FACES_DIR

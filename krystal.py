@@ -86,7 +86,8 @@ class Startup:
         verbal_feedback(phrase=f'Hello, {self.first_name.title()}', vocal_tone='misc', vocal_speed=185,
                         vocal_volume=0.55)
 
-    def test(self):
+    @staticmethod
+    def test():
         try:
             while True:
                 request = input('Yes? > ')
@@ -98,17 +99,20 @@ class Startup:
     def run_main_version(self):
         self.hello()
         Updates.universal_handler('push')
-        hey_krytal()
+        while bool(environ['AUTO_REFRESH']):
+            hey_krystal()
+            start_processes()
 
     def run_demo_version(self):
         self.hello()
         print("Thank you for using Krystal. In demo mode you will not receive\n"
               "notifications or automatic updates. This account is not personalized.")
         while bool(environ['AUTO_REFRESH']):
-            hey_krytal()
+            hey_krystal()
+            start_processes()
 
 
-def returner(user_statement, krystal_statement):
+def save_conversation(user_statement, krystal_statement):
     """
     Sends spoken and response conversation to Able servers. Conversation
     logs are kept for users to view in the Able Access Conversation Portal.
@@ -130,7 +134,7 @@ def interrupt_callback():
     return interrupted
 
 
-def hey_krytal():
+def hey_krystal():
     """
     Detects "Hey Krystal"
     :return:
@@ -147,6 +151,12 @@ def hey_krytal():
 
     detector.terminate()
 
+
+def start_processes():
+    """
+    Start processes after "Hey Krystal" is triggered
+    :return:
+    """
     verbal_feedback('Yes?')
     if not command_handler():
         log_events.error('COMMAND HELPER FAILURE')

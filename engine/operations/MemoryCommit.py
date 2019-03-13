@@ -18,7 +18,6 @@ class CommitToMemory:
                 self._memory
             ]
         }
-        print(f'MEMORY: \n {self._memory}')
         self.write()
 
     def write(self):

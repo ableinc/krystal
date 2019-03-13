@@ -3,7 +3,6 @@ import pickle
 import time
 import warnings
 from os import environ
-
 import cv2
 import face_recognition
 import imutils
@@ -11,9 +10,8 @@ import numpy as np
 from face_recognition import face_locations
 from imutils.video import FPS
 from imutils.video import VideoStream
-
-from root import DET_MODEL, DET_PROTOTXT
-from root import TEST_FACES_DIR, TRAIN_FACES_DIR
+from datetime import datetime
+from root import DET_MODEL, DET_PROTOTXT, FACES_MODEL, TRAIN_FACES_DIR, SCREENSHOT_SAVE_PATH
 
 environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 warnings.filterwarnings('ignore', '', category=RuntimeWarning)
@@ -80,16 +78,16 @@ def Detection():
                     return ''.join(CLASSES[idx])
 
 
-def predict(X_img_path, knn_clf=None, model_save_path=TRAIN_FACES_DIR, DIST_THRESH=.5):
+def predict(X_img_path, knn_clf=None, saved_model_path=FACES_MODEL, DIST_THRESH=.5):
 
     if not os.path.isfile(X_img_path) or os.path.splitext(X_img_path)[1][1:] not in ALLOWED_EXTENSIONS:
         raise Exception("invalid image path: {}".format(X_img_path))
 
-    if knn_clf is None and model_save_path == "":
+    if knn_clf is None and saved_model_path == "":
         raise Exception("must supply knn classifier either thourgh knn_clf or model_save_path")
 
     if knn_clf is None:
-        with open(model_save_path, 'rb') as f:
+        with open(saved_model_path, 'rb') as f:
             knn_clf = pickle.load(f)
 
     X_img = face_recognition.load_image_file(X_img_path)
@@ -109,23 +107,21 @@ def predict(X_img_path, knn_clf=None, model_save_path=TRAIN_FACES_DIR, DIST_THRE
     return final
 
 
-def snapshot():
-    print('Taking a look at you.')
-    name = 'snapshot'
+def snapshot(login: bool = False):
     cam = cv2.VideoCapture(0)  # 0 -> index of camera
-    s, img = cam.read()
-    if s:  # frame captured without any errors
-        cv2.namedWindow("Snapshot", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Snapshot", 300, 300)
-        cv2.destroyWindow("Snapshot")
-        cv2.imwrite(TEST_FACES_DIR + "/{}.jpg".format(name.title()), img)  # save image
+    active = True
+    image_save_path = os.path.join(SCREENSHOT_SAVE_PATH, f"/{str(datetime.now()).replace(' ', '_')}.jpg")
+    while active:
+        s, img = cam.read()
+        for x in range(0, 15): x = x  # random loop to give time for clear image to be taken
+        if s:  # frame captured without any errors
+            if login:
+                return img
+            else:
+                cv2.imwrite(image_save_path, img)
+        active = False
+    return image_save_path
 
 
-def signInWithFace():
-    print('Please look at the camera. Adjust for great lighting')
-    cam = cv2.VideoCapture(0)
-    seconds = time.strftime("%S")
-    while cam.isOpened():
-        frame, img = cam.read()
-        if frame:
-            return 'Feature coming soon'
+def sign_in_with_face():
+    return 'Feature coming soon'

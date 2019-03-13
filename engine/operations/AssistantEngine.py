@@ -96,14 +96,20 @@ class InformationFetcher:
         temp_data = ''.join(data)
         grab_sentences = sent_tokenize(temp_data)
         response = []
-        if singular:
-            return str(grab_sentences[0])
-        for sentences in range(len(grab_sentences)):
-            if search_object in grab_sentences[sentences]:
-                response.append(grab_sentences[sentences])
-            else:
-                response.append(grab_sentences[0])
-        return response
+        try:
+            if singular:
+                return str(grab_sentences[0])
+            for sentences in range(len(grab_sentences)):
+                if search_object in grab_sentences[sentences]:
+                    response.append(grab_sentences[sentences])
+                else:
+                    response.append(grab_sentences[0])
+        except IndexError as ie:
+            print(f'IndexError in InformationFetcher at [grab_sentence]: {ie}')
+            print(f'RESPONSE(S): \n {response}')
+            print(f'FETCHED DATA: \n {grab_sentences}')
+        finally:
+            return response if len(response) > 0 else ''
 
     def send_for_memory_commit(self):
         CommitToMemory(memory=self.full_context_dict)

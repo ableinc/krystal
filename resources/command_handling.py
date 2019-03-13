@@ -1,17 +1,17 @@
 #! /usr/bin/env python3
 import logging
-import multiprocessing
 import sys
 import webbrowser
-from os import listdir, path
+from os import remove
 from threading import Thread
 import speech_recognition as sr
 from conversation import response
 from engine.operations import LanguageEngine, AssistantEngine, MemoryCommit
 from resources.speech import speech_recognizer
+from resources import vision
 from resources.verbal_feedback import verbal_feedback
 from resources.vocab import available_request_commands, statement_types
-from root import TEST_FACES_DIR, FACES_MODEL, EVENT_LOG, Endpoints
+from root import EVENT_LOG, Endpoints
 
 # initialize
 r = sr.Recognizer()
@@ -138,15 +138,12 @@ def process_available_commands(request, string_concat):
             return LanguageEngine.LanguageEngine(request, request).controlled_flow()
 
 
-def special_requests(whos_that=False, whats_that=False):
+def special_requests(whos_that: bool = False, whats_that: bool = False):
     if whos_that is True:
-        from resources import vision
-        vision_snap = multiprocessing.Process(name='vision_snapshot', target=vision.snapshot())
-        vision_snap.daemon = True
-        vision_snap.start()
-        for img_path in listdir(TEST_FACES_DIR):
-            preds = vision.predict(path.join(TEST_FACES_DIR, img_path), model_save_path=FACES_MODEL)
-            name = ''.join(preds).title()
-            return name
+        snapshot_file_path = vision.snapshot()
+        preds = vision.predict(snapshot_file_path)
+        name = ''.join(preds).title()
+        remove(snapshot_file_path)  # remove screenshot
+        return name
     if whats_that is True:
         return 'FEATURE OFFLINE'
