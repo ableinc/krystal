@@ -1,7 +1,6 @@
 import json
 from io import StringIO
-from os import path
-
+from os import path, remove
 from root import MEMORY_NEW_INFORMATION
 
 
@@ -12,32 +11,32 @@ class CommitToMemory:
         Commit new information to memory for training
         :param pos: Dictionary object of fetched information and part of speech
         """
-        self.memory = memory
+        self._memory = memory
         self.error = None
-        self.initialInputData = {
+        self._init_data = {
             "memory": [
-                self.memory
+                self._memory
             ]
         }
+        print(f'MEMORY: \n {self._memory}')
         self.write()
 
     def write(self):
-        print(f'Committing to memory: \n {self.memory} ...')
+        similar_contents = False
         try:
             if not path.exists(MEMORY_NEW_INFORMATION):
                 with open(MEMORY_NEW_INFORMATION, mode='w', encoding='utf-8') as newJson:
-                    json.dump(obj=self.initialInputData, fp=newJson, sort_keys=True, indent=4, separators=(',', ': '))
+                    json.dump(obj=self._init_data, fp=newJson, sort_keys=True, indent=4, separators=(',', ': '))
             else:
                 memory_file = StringIO(open(MEMORY_NEW_INFORMATION, 'r', encoding='utf-8').read())
                 memory_file_object = json.load(memory_file)
-                different_keys = memory_file_object - self.memory
-                if different_keys is not None:
-                    memory_file_object.update(different_keys)
-                else:
-                    memory_file_object.update(self.memory)
-
-                with open(MEMORY_NEW_INFORMATION, mode='w', encoding='utf-8') as updateJson:
-                    json.dump(obj=memory_file_object, fp=updateJson, sort_keys=True, indent=4, separators=(',', ': '))
+                for entry in memory_file_object['memory']:
+                    if entry['phrase'] == self._memory['phrase']:
+                        similar_contents = True
+                if similar_contents is False:
+                    memory_file_object['memory'].append(self._memory)
+                    with open(MEMORY_NEW_INFORMATION, mode='w', encoding='utf-8') as updateJson:
+                        json.dump(obj=memory_file_object, fp=updateJson, sort_keys=True, indent=4, separators=(',', ': '))
         except json.JSONDecodeError as je:
             print(f'Json Decoder Error: {je}')
             self.error = je
@@ -46,9 +45,12 @@ class CommitToMemory:
             self.error = te
         finally:
             if self.error is not None:
-                print(f'Failed to commit object to memory: \n{self.memory}')
+                print('Failed to commit object to memory. ')
+                remove(MEMORY_NEW_INFORMATION)
+            elif similar_contents is True:
+                print('Information is already known.')
             else:
-                print(f'Successfully committed to memory: \n {self.memory}')
+                print('Successfully committed to memory.')
 
 
 class Misc:

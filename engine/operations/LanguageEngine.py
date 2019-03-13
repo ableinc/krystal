@@ -80,8 +80,8 @@ class LanguageEngine:
     def _pos_to_dict(self, token, verbose: bool = False):
         if verbose:
             print(f'{token.text}, {token.pos_}, {token.dep_}')
-        new_dict = {str(token.text).lower(): {'entity': '', 'dep': token.dep_, 'details': token.tag_,
-                                              'head': token.head, 'lemma': token.lemma_, 'pos': token.pos_,
+        new_dict = {str(token.text).lower(): {'entity': '', 'dep': f'{token.dep_}', 'details': f'{token.tag_}',
+                                              'head': f'{token.head}', 'lemma': f'{token.lemma_}', 'pos': f'{token.pos_}',
                                               'definition': ''}}
         self.vocab_tagging.update(new_dict)
 
@@ -96,9 +96,11 @@ class LanguageEngine:
             if self.entity_tagging.get(word, None) is not None:
                 self.vocab_tagging[word]['entity'] = self.entity_tagging[word]['label']
         if self.known is not None:
-            self.full_vocab_object.update({self.request: self.vocab_tagging, 'response': self.known})
+            self.full_vocab_object.update({'phrase': self.request, 'response': self.known,
+                                           self.request: self.vocab_tagging})
         else:
-            self.full_vocab_object.update({self.request: self.vocab_tagging, 'response': ''})
+            self.full_vocab_object.update({'phrase': self.request, 'response': '',
+                                           self.request: self.vocab_tagging})
 
     def send_data(self):
         WorkerThread(full_context_dict=self.full_vocab_object)

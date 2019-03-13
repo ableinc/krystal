@@ -7,7 +7,8 @@ from root import check_valid_sys_requirements
 
 python_libraries = ['tensorflow==1.10', 'netifaces', 'deepspeech', 'webrtcvad', 'halo', 'pyaudio', 'opencv-python',
                     'face_recognition', 'SpeechRecognition', 'tflearn', 'beautifulsoup', 'imutils', 'spacy', 'nltk',
-                    'snowboy', 'beautifulsoup4', 'sklearn', 'requests', 'pyttsx3', 'pyobjc', 'uvloop', 'dlib']
+                    'snowboy', 'beautifulsoup4', 'sklearn', 'requests', 'pyttsx3', 'pyobjc', 'uvloop', 'dlib',
+                    'html5lib']
 
 homebrew_formulas = ['cmake', 'portaudio', 'sox', 'swig']
 

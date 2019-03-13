@@ -97,7 +97,7 @@ def response(sentence, userid='krystal', show_details=False):
     if results:
         # loop as long as there are matches to process
         while results:
-            for i in intents['intents']:
+            for i in intents['personality']:
                 # find a tag matching the first result
                 if i['tag'] == results[0][0]:
                     # set context for this intent if necessary

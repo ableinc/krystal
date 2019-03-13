@@ -21,17 +21,11 @@ Feel free to open the file to check each individual package.
 3) Run 'python3 krystal.py'
 
 # Change Log:
-Version: <b>0.91.0</b>
+Date: March 12, 2019 - Version: <b>0.91.0</b>
 
-1) Major project clean up. Resource intensive operations are run in the background
-for faster processing.
-2) Speech recognition engine changed; all speech is processed on board with online
-transcribing enabled as a back up during misunderstanding.
-3) Vision is temporarily offline for some requests and may fail during others.
-4) Tightly coupled operations have been broken down into steps. This was done for
-debugging purposes; isolating errors.
-5) Verbal feedback engine should work on both Mac and Linux platforms with no error.
-If error occurs please create an Issue.
+1) Threading operations simplified
+2) All knowledge given is processed, organized and stored locally (Memory)
+3) You can run requests via terminal entry by uncommenting line 45 and commenting line 44 on krystal.py (run as normal)
 
 # Heads up
 Planned updates and improvements | Completion dates:
@@ -93,3 +87,5 @@ to always be running and will only gather information when activated.<br>
    A: You may need to grab a precompiled build for Snowboy (follow their instructions <a href="https://github.com/Kitt-AI/snowboy">here</a>) then add the correct files to the "SBpy3" folder.
 3) <b>Q/S</b>: I get a warning message from Tensorflow every time I start Krystal (i.e. keep_dims)<br />
    A: This is all dependant on Tensorflow, please ignore. Krystal will use a modified version of Tensorflow in the future.
+4) <b>Q/S</b> I cannot connect to Able servers with AiKey
+   A: Please run in demo mode. Features are being updated daily and Krystal's API is going through changes as well. 

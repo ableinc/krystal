@@ -2,11 +2,9 @@ import json
 import webbrowser
 from os import system
 from threading import Thread
-
 import requests
 from bs4 import BeautifulSoup
 from nltk import sent_tokenize
-
 from engine.operations.MemoryCommit import CommitToMemory
 from root import MEMORY_NEW_INFORMATION
 
@@ -50,23 +48,28 @@ class InformationFetcher:
 
     def parse_dict_information(self):
         response = self.full_context_dict['response']
-        phrase = list(self.full_context_dict.keys())[0]
+        phrase = self.full_context_dict['phrase']
         try:
-            for word, properties in self.full_context_dict[phrase]:
+            for word, properties in self.full_context_dict[phrase].items():
                 if properties['definition'] == '':
                     search_sentence = self.search_based_on_noun_type(properties['pos'], word)
-                    self.full_context_dict[phrase][word]['response'] = search_sentence
+                    self.full_context_dict[phrase][word]['definition'] = search_sentence
             if response == '':
-                sentence = self.search_based_on_noun_type('phrase', phrase)
+                sentence = self.search_based_on_noun_type('phrase', phrase, False)
                 self.full_context_dict['response'] = sentence
             if self.self_start:
                 self.send_for_memory_commit()
         except ValueError as ve:
-            print(f'ValueError in InformationFetcher {ve}')
+            print(f'ValueError in InformationFetcher: {ve}')
         except KeyError as ke:
-            print(f'KeyError in InformationFetcher {ke}')
+            print(f'KeyError in InformationFetcher: {ke}')
 
-    def search_based_on_noun_type(self, noun_type, word):
+    @staticmethod
+    def print_information(args):
+        for x in args:
+            print(f'Arg: {x}')
+
+    def search_based_on_noun_type(self, noun_type, word, is_definition: bool = True):
         if noun_type == 'PROPN':
             request_link = 'https://en.wikipedia.org/wiki/' + word.replace(' ', '_')
             page = requests.get(request_link)
@@ -75,8 +78,12 @@ class InformationFetcher:
             page.close()
             self.online_content = data
         else:
-            request_link = 'https://www.google.com/search?q=' + word.replace(' ', '') + '&oq=' + \
-                           word.replace(' ', '') + '&ie=UTF-8'
+            if is_definition:
+                request_link = 'https://www.google.com/search?q=definition+of+' + word.replace(' ', '+') + '&oq=' + \
+                               'definition+of+' + word.replace(' ', '+') + '&ie=UTF-8'
+            else:
+                request_link = 'https://www.google.com/search?q=' + word.replace(' ', '+') + '&oq=' + \
+                               word.replace(' ', '+') + '&ie=UTF-8'
             page = requests.get(request_link)
             tree = BeautifulSoup(page.text, 'html5lib')
             data = [page.text for page in tree.find_all("span", class_="st")]
@@ -85,10 +92,12 @@ class InformationFetcher:
         return self.grab_sentence(self.online_content, word)
 
     @staticmethod
-    def grab_sentence(data, search_object):
+    def grab_sentence(data, search_object, singular: bool = True):
         temp_data = ''.join(data)
         grab_sentences = sent_tokenize(temp_data)
         response = []
+        if singular:
+            return str(grab_sentences[0])
         for sentences in range(len(grab_sentences)):
             if search_object in grab_sentences[sentences]:
                 response.append(grab_sentences[sentences])

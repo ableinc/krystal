@@ -29,6 +29,11 @@ available_request_commands = {
         'are': '{0}',
         'am': '{0}'
     },
+    'how': {
+        'are': '{0}',
+        'is': '{0}',
+        'am': '{0}'
+    },
     'are': {
         'there': '{0}',
     },
@@ -83,7 +88,8 @@ statement_types = {
         'when',
         'why',
         'are',
-        'is'
+        'is',
+        'how'
     },
     'statement': {
         'there is',
