@@ -1,0 +1,88 @@
+{
+    "memory": [
+        {
+            "phrase": "what is your name",
+            "response": "You can call me Krystal",
+            "what is your name": {
+                "is": {
+                    "definition": "Is definition is - present tense third-person singular of be; dialectal present tense \nfirst-person and third-person singular of be; dialectal present tense plural of be\u00a0...Sep 13, 1998 ... Years from now, when we look back on Bill Clinton's presidency, its defining \nmoment may well be Clinton's rationalization to the grand jury\u00a0...Aug 17, 2017 ... Clinton denied having a sexual relationship with Lewinsky while he was under oath for a deposition for the Jones case.",
+                    "dep": "ROOT",
+                    "details": "VBZ",
+                    "entity": "",
+                    "head": "Is",
+                    "lemma": "be",
+                    "pos": "VERB"
+                },
+                "name": {
+                    "definition": "Name Definition for a whore named Fellatia: Fellatia is a lovely girl who lives in \nDes Moines.",
+                    "dep": "nsubj",
+                    "details": "NN",
+                    "entity": "",
+                    "head": "Is",
+                    "lemma": "name",
+                    "pos": "NOUN"
+                },
+                "what": {
+                    "definition": "\u2014used to say that someone or something is remarkable for having good or bad qualities.",
+                    "dep": "attr",
+                    "details": "WP",
+                    "entity": "",
+                    "head": "Is",
+                    "lemma": "what",
+                    "pos": "NOUN"
+                },
+                "your": {
+                    "definition": "Jan 14, 2019 ...",
+                    "dep": "poss",
+                    "details": "PRP$",
+                    "entity": "",
+                    "head": "Name",
+                    "lemma": "-PRON-",
+                    "pos": "ADJ"
+                }
+            }
+        },
+        {
+            "phrase": "who is the president",
+            "response": "",
+            "who is the president": {
+                "is": {
+                    "definition": "",
+                    "dep": "ROOT",
+                    "details": "VBZ",
+                    "entity": "",
+                    "head": "Is",
+                    "lemma": "be",
+                    "pos": "VERB"
+                },
+                "president": {
+                    "definition": "",
+                    "dep": "attr",
+                    "details": "NNP",
+                    "entity": "",
+                    "head": "Is",
+                    "lemma": "president",
+                    "pos": "PROPN"
+                },
+                "the": {
+                    "definition": "",
+                    "dep": "det",
+                    "details": "DT",
+                    "entity": "",
+                    "head": "President",
+                    "lemma": "the",
+                    "pos": "DET"
+                },
+                "who": {
+                    "definition": "",
+                    "dep": "attr",
+                    "details": "WP",
+                    "entity": "",
+                    "head": "Is",
+                    "lemma": "who",
+                    "pos": "NOUN"
+                }
+            }
+        }
+    ]
+}

@@ -17,8 +17,8 @@ from snowboy import snowboydecoder
 
 # initialize
 welcome_msg = "\nThank you for unpacking me!\nI'm starting to get comfy but...\nI don't really know much about you.\n" \
-              "Soooo, first thing first,\nif you're registered at AbleInc.us go ahead\nand enter your " \
-              "AI Key.\n"
+              "Soooo, first thing first,\nif you're registered at https://able.digital go ahead\nand enter your " \
+              "AiKey.\n"
 
 interrupted = False
 

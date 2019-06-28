@@ -3,10 +3,10 @@ import logging
 import multiprocessing
 import sys
 import webbrowser
-from os import listdir, path
+from os import listdir, path, environ
 from threading import Thread
 import speech_recognition as sr
-from conversation import response
+from conversation import krystal_responses
 from engine.operations import LanguageEngine, AssistantEngine, MemoryCommit
 from resources.speech import speech_recognizer
 from resources.verbal_feedback import verbal_feedback
@@ -30,11 +30,11 @@ def _setup_flow_for_thread(test: bool = False, args: tuple = None):
     if test and args is not None:
         sentence, str_concat = args
         memory_object = process_available_commands(sentence, str_concat)
+        # full_memory_object = AssistantEngine.InformationFetcher(memory_object).return_full_memory_object()
+        MemoryCommit.CommitToMemory(memory_object)
     else:
         sentence, str_concat = capture_request_deepspeech()
-        memory_object = process_available_commands(sentence, str_concat)
-    full_memory_object = AssistantEngine.InformationFetcher(memory_object).return_full_memory_object()
-    MemoryCommit.CommitToMemory(full_memory_object)
+        process_available_commands(sentence, str_concat)
 
 
 def capture_request_wit():
@@ -91,51 +91,48 @@ def process_request_text(txt):
 
 def process_available_commands(request, string_concat):
     txt_type = determine_statement_type(request)
-    known = False
-    message = ''
+    response = ''
     try:
-        if request == 'NoneValueType':
+        if request[0] == 'NoneValueType':
             raise TypeError
         elif request.startswith('who is that'):
             msg = special_requests(whos_that=True)
-            message = string_concat.format(msg)
+            response = string_concat.format(msg)
         elif request.startswith('what is that'):
             msg = special_requests(whats_that=True)
-            message = string_concat.format(msg)
+            response = string_concat.format(msg)
         elif request.startswith('sign in'):
-            message = 'Enable these features on Able Digital Access. Opening browser.'
+            response = 'Enable these features on Able Digital Access. Opening browser.'
             webbrowser.open_new(Endpoints.access_url.value)
         elif request.startswith('search') or request.startswith('google'):
             search_param = request[request.find('for'):]
             AssistantEngine.AssistantOperations('search', search_param)
-            message = string_concat.format(search_param)
+            response = string_concat.format(search_param)
         elif request.startswith('open'):
             application = request[request.find('open'):]
             AssistantEngine.AssistantOperations('open', application)
-            message = string_concat.format(application)
+            response = string_concat.format(application)
         elif request != '':
-            known = True
-            res = response.response(request)
-            message = string_concat.format(res)
+            res = krystal_responses.response(request)
+            response = string_concat.format(res)
         else:
-            message = "Sorry, I can't help at the moment."
+            response = "Sorry, I can't help at the moment."
     except ValueError as ve:
-        message = 'Sorry, something went wrong.'
+        response = 'Sorry, something went wrong.'
         log_events.error(ve)
     except TypeError as te:
         log_events.error(te)
-        message = 'Sorry, I cannot help with that request.'
+        response = 'Sorry, I cannot help with that request.'
     except AttributeError as ae:
         log_events.error(ae)
         print(f'Attribute error in Command Handling: {ae}')
         pass
     finally:
         print(f'Statement type: {str(txt_type).title()}')
-        verbal_feedback(message, vocal_speed=195)
-        if known and message != 'None':
-            return LanguageEngine.LanguageEngine(request, request, message).controlled_flow()
-        else:
-            return LanguageEngine.LanguageEngine(request, request).controlled_flow()
+        verbal_feedback(response, vocal_speed=195)
+        if bool(environ['DEV']):
+            return LanguageEngine.LanguageEngine(request, response).controlled_flow()
+        LanguageEngine.LanguageEngine(request, response, True)
 
 
 def special_requests(whos_that=False, whats_that=False):

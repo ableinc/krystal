@@ -1,7 +1,8 @@
 import logging
+from os import environ
 import re
 import spacy
-from engine.operations.AssistantEngine import WorkerThread
+from engine.operations.AssistantEngine import WorkerThread as AssistantEngineThread
 from root import EVENT_LOG
 
 logging.basicConfig(filename=EVENT_LOG, format='%(asctime)s:%(levelname)s:%(name)s - %(message)s', level=logging.DEBUG)
@@ -13,7 +14,7 @@ nlp = spacy.load(defaultLanguage)  # declaration - nlp(u''.format([variable_cont
 
 
 class LanguageEngine:
-    def __init__(self, words: str, request: str, known: str = None, self_start: bool = False):
+    def __init__(self, request: str, known_response: str = None, self_start: bool = False):
         """
         Exam text through linguistic processing, store in an Object to be returned
         for memory write.
@@ -35,16 +36,15 @@ class LanguageEngine:
             End: Index of end of entity in the Doc. ent.end_char
             Label: Entity label, i.e. type. ent.label_
 
-        :param words: titled text (used to determine noun type in part-of-speech detection)
         :param request: the given phrase by user
-        :param known: if information is already known to memory then pass value
+        :param known_response: if information is already known to memory then pass value
         :param self_start: process, gather, compress and save data to memory automatically (threading)
         """
-        _sanitized_string = re.sub(r'[?|$.,!]', r'', words)
-        self.words = _sanitized_string.title().encode()
+        _sanitized_string = re.sub(r'[?|$.,!]', r'', request.title())
+        self.titled_request = _sanitized_string.title().encode()
         self.request = request
-        self.known = known
-        self.doc = nlp(self.words.decode('utf-8'))
+        self.known_response = known_response
+        self.doc = nlp(self.titled_request.decode('utf-8'))
         self.vocab_tagging = {}
         self.entity_tagging = {}
         self.full_vocab_object = {}
@@ -95,15 +95,11 @@ class LanguageEngine:
         for word, properties in self.vocab_tagging.items():
             if self.entity_tagging.get(word, None) is not None:
                 self.vocab_tagging[word]['entity'] = self.entity_tagging[word]['label']
-        if self.known is not None:
-            self.full_vocab_object.update({'phrase': self.request, 'response': self.known,
-                                           self.request: self.vocab_tagging})
-        else:
-            self.full_vocab_object.update({'phrase': self.request, 'response': '',
-                                           self.request: self.vocab_tagging})
+        self.full_vocab_object.update({'phrase': self.request, 'response': self.known_response,
+                                       self.request: self.vocab_tagging})
 
     def send_data(self):
-        WorkerThread(full_context_dict=self.full_vocab_object)
+        AssistantEngineThread(full_context_dict=self.full_vocab_object, self_start=True)
         self.clear()
 
     def return_data(self):

@@ -47,9 +47,17 @@ class InformationFetcher:
         self.parse_dict_information()
 
     def parse_dict_information(self):
+        """
+        Adding information to empty fields of the full context dictionary. Data is
+        sent to search_based_on_noun_type() function to be gathered.
+        :return:
+        """
         response = self.full_context_dict['response']
         phrase = self.full_context_dict['phrase']
         try:
+            if self.self_start:
+                self.send_for_memory_commit()
+                return
             for word, properties in self.full_context_dict[phrase].items():
                 if properties['definition'] == '':
                     search_sentence = self.search_based_on_noun_type(properties['pos'], word)
@@ -57,8 +65,6 @@ class InformationFetcher:
             if response == '':
                 sentence = self.search_based_on_noun_type('phrase', phrase, False)
                 self.full_context_dict['response'] = sentence
-            if self.self_start:
-                self.send_for_memory_commit()
         except ValueError as ve:
             print(f'ValueError in InformationFetcher: {ve}')
         except KeyError as ke:
@@ -70,6 +76,13 @@ class InformationFetcher:
             print(f'Arg: {x}')
 
     def search_based_on_noun_type(self, noun_type, word, is_definition: bool = True):
+        """
+        Search Google or Wikipedia based on noun_type and is_definition boolean
+        :param noun_type: Noun or Proper noun
+        :param word: The word of the noun_type
+        :param is_definition: Look up word as a definition
+        :return:
+        """
         if noun_type == 'PROPN':
             request_link = 'https://en.wikipedia.org/wiki/' + word.replace(' ', '_')
             page = requests.get(request_link)
@@ -92,36 +105,56 @@ class InformationFetcher:
         return self.grab_sentence(self.online_content, word)
 
     @staticmethod
-    def grab_sentence(data, search_object, singular: bool = True):
-        temp_data = ''.join(data)
+    def grab_sentence(content, subject, singular: bool = True):
+        """
+        Grab sentence from web content provided by BeautifulSoup
+        :param content: Content from BeautifulSoup
+        :param subject: What we're looking for in sentence
+        :param singular: One sentence or many
+        :return:
+        """
+        temp_data = ''.join(content)
         grab_sentences = sent_tokenize(temp_data)
         response = []
         if singular:
             return str(grab_sentences[0])
         for sentences in range(len(grab_sentences)):
-            if search_object in grab_sentences[sentences]:
+            if subject in grab_sentences[sentences]:
                 response.append(grab_sentences[sentences])
             else:
                 response.append(grab_sentences[0])
         return response
 
     def send_for_memory_commit(self):
+        """
+        Send mutable memory data to memory commit function
+        :return:
+        """
         CommitToMemory(memory=self.full_context_dict)
 
     def return_full_memory_object(self):
+        """
+        Return full mutable memory data
+        :return:
+        """
         return self.full_context_dict
 
     @staticmethod
     def get_memories():
+        """
+        Get existing memories
+        :return:
+        """
         with open(MEMORY_NEW_INFORMATION, 'r') as jsonFile:
             json_object = json.load(jsonFile)
             return json_object
 
 
 class WorkerThread(Thread):
-    def __init__(self, full_context_dict: dict):
+    def __init__(self, full_context_dict: dict, self_start: bool = False):
         super(WorkerThread, self).__init__()
         self.fcd = full_context_dict
+        self.self_start = self_start
 
     def run(self):
-        InformationFetcher(full_context_dict=self.fcd)
+        InformationFetcher(full_context_dict=self.fcd, self_start=self.self_start)
